@@ -115,7 +115,7 @@ func DeleteVideo(v_id int) serializer.JsonResponse {
 
 // 获取视频
 func GetVideoInfo(v_id int) serializer.JsonResponse {
-	re, _ := cache.GetRedis()
+	re, _ := cache.RedisCache.Get()
 	err2 := re.Set("hello", "Go", 0).Err()
 	if err2 != nil {
 		panic(err2)

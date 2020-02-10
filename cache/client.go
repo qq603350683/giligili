@@ -1,23 +1,28 @@
 package cache
 
 import (
+	"errors"
 	"fmt"
 	"giligili/util"
 	"github.com/go-redis/redis"
 	"os"
+	"time"
 )
-
-// Redis 集群
-var RedisPoolNum int
-var RedisPool chan *redis.Client
 
 // Redis 基本参数
 var NewClientAddr string
 var NewClientPassword string
 var NewClientDB int
 
+// Redis 集群
+type RedisPool struct {
+	Num int
+	Pool chan *redis.Client
+}
+
+
 // 初始化参数
-func Init() {
+func RedisInit() *RedisPool {
 	var str string
 	var i int
 
@@ -32,14 +37,18 @@ func Init() {
 	NewClientDB = i
 
 	str = os.Getenv("REDIS_POOL_NUM")
-	i, err = util.ToInt(str)
+	num, err := util.ToInt(str)
 	if err != nil {
 		panic(err)
 	}
-	RedisPoolNum = i
 
-	// 开启连接池
-	NewRedisPool(RedisPoolNum)
+	pool := RedisPool{
+		Num: num,
+	}
+
+	pool.NewRedisPool(pool.Num)
+
+	return &pool
 }
 
 // 创建Redis实例
@@ -50,41 +59,41 @@ func CreateClient() *redis.Client {
 		DB: NewClientDB,
 	})
 
+	pong, err := client.Ping().Result()
+	fmt.Println(pong, err)
+
 	return client
 }
 
 // 把Redis放到连接池中去
-func PutRedis(client *redis.Client) {
-	RedisPool <- client
+func (r *RedisPool) Put(client *redis.Client) {
+	 r.Pool <- client
 }
 
 // 取Redis实例使用
-func GetRedis() (*redis.Client, error) {
-	fmt.Println(RedisPool)
-	client := <- RedisPool
+func (r *RedisPool) Get() (*redis.Client, error) {
+	fmt.Println(r.Pool)
+	client, ok := <- r.Pool
 	fmt.Println(client)
-	//if !ok {
-	//	// 等待一下
-	//	time.Sleep(time.Second / 5)
-	//	client, ok = <- RedisPool
-	//	if !ok {
-	//		return nil, errors.New("系统繁忙~")
-	//	}
-	//}
+	if !ok {
+		// 等待一下
+		time.Sleep(time.Second / 5)
+		client, ok = <- r.Pool
+		if !ok {
+			return nil, errors.New("系统繁忙~")
+		}
+	}
 
 	return client, nil
 }
 
 // 创建Redis连接池
-func NewRedisPool(max int) {
-	//a := make(chan *redis.Client, max)
+func (r *RedisPool) NewRedisPool(max int) {
 	for i := 0;i < max;i++ {
 		go func() {
-			client := CreateClient()
-
-			RedisPool <- client
-
-			fmt.Println(RedisPool)
+			r.Pool <- CreateClient()
 		}()
 	}
+
+	time.Sleep(5 * time.Second)
 }

@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"giligili/model"
 	"giligili/cache"
+	"giligili/model"
 	"giligili/routes"
 	"github.com/joho/godotenv"
 	"os"
@@ -15,7 +14,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("asdasd")
 	// 读取GORM中文错误提示
 	//LoadLocales
 
