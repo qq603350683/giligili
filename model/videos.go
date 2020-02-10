@@ -1,6 +1,7 @@
 package model
 
 import (
+	"giligili/cache"
 	"giligili/message"
 	"giligili/serializer"
 	"giligili/util"
@@ -114,6 +115,12 @@ func DeleteVideo(v_id int) serializer.JsonResponse {
 
 // 获取视频
 func GetVideoInfo(v_id int) serializer.JsonResponse {
+	re, _ := cache.GetRedis()
+	err2 := re.Set("hello", "Go", 0).Err()
+	if err2 != nil {
+		panic(err2)
+	}
+
 	var video Video
 
 	err := DB.Select("v_id, info, browse, love, created_at").Where("v_id = ?", v_id).Where("del_at = ?", DelAtDefault).First(&video).Error
@@ -125,7 +132,7 @@ func GetVideoInfo(v_id int) serializer.JsonResponse {
 	}
 
 	// 阅读数 +1
-	err = DB.Model(&video).UpdateColumn("browse", video.Browse+1)
+	err = DB.Model(&video).UpdateColumn("browse", video.Browse+1).Error
 	if err != nil {
 		video.Browse += 1
 	}

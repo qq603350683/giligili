@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"giligili/model"
+	"giligili/cache"
 	"giligili/routes"
 	"github.com/joho/godotenv"
 	"os"
@@ -13,12 +15,17 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	fmt.Println("asdasd")
 	// 读取GORM中文错误提示
 	//LoadLocales
 
 	// 链接数据库
 	model.Database(os.Getenv("MYSQL_DSN"))
 
+	// 初始化数据库连接池
+	cache.Init()
+
 	routes.NewRouter()
+
+
 }
