@@ -1,7 +1,6 @@
 package model
 
 import (
-	"giligili/cache"
 	"giligili/message"
 	"giligili/serializer"
 	"giligili/util"
@@ -115,11 +114,8 @@ func DeleteVideo(v_id int) serializer.JsonResponse {
 
 // 获取视频
 func GetVideoInfo(v_id int) serializer.JsonResponse {
-	re, _ := cache.RedisCache.Get()
-	err2 := re.Set("hello", "Go", 0).Err()
-	if err2 != nil {
-		panic(err2)
-	}
+	//re, _ := cache.RedisCache.Get()
+	//result, _ := re.Get("hello").Result()
 
 	var video Video
 

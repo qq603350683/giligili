@@ -3,16 +3,9 @@ package cache
 import (
 	"errors"
 	"fmt"
-	"giligili/util"
 	"github.com/go-redis/redis"
-	"os"
 	"time"
 )
-
-// Redis 基本参数
-var NewClientAddr string
-var NewClientPassword string
-var NewClientDB int
 
 // Redis 集群
 type RedisPool struct {
@@ -20,43 +13,20 @@ type RedisPool struct {
 	Pool chan *redis.Client
 }
 
-
-// 初始化参数
-func RedisInit() *RedisPool {
-	var str string
-	var i int
-
-	NewClientAddr = os.Getenv("REDIS_ADDR")
-	NewClientPassword = os.Getenv("REDIS_PASSWORD")
-
-	str = os.Getenv("REDIS_DB")
-	i, err := util.ToInt(str)
-	if err != nil {
-		panic(err)
-	}
-	NewClientDB = i
-
-	str = os.Getenv("REDIS_POOL_NUM")
-	num, err := util.ToInt(str)
-	if err != nil {
-		panic(err)
-	}
-
-	pool := RedisPool{
-		Num: num,
-	}
-
-	pool.NewRedisPool(pool.Num)
-
-	return &pool
+// Redis 配置
+type RedisConfig struct {
+	Addr string
+	Password string
+	DB int
+	PoolNum int
 }
 
 // 创建Redis实例
-func CreateClient() *redis.Client {
+func CreateClient(config RedisConfig) *redis.Client {
 	client := redis.NewClient(&redis.Options{
-		Addr: NewClientAddr,
-		Password: NewClientPassword,
-		DB: NewClientDB,
+		Addr: config.Addr,
+		Password: config.Password,
+		DB: config.DB,
 	})
 
 	pong, err := client.Ping().Result()
@@ -72,9 +42,8 @@ func (r *RedisPool) Put(client *redis.Client) {
 
 // 取Redis实例使用
 func (r *RedisPool) Get() (*redis.Client, error) {
-	fmt.Println(r.Pool)
 	client, ok := <- r.Pool
-	fmt.Println(client)
+
 	if !ok {
 		// 等待一下
 		time.Sleep(time.Second / 5)
@@ -88,12 +57,23 @@ func (r *RedisPool) Get() (*redis.Client, error) {
 }
 
 // 创建Redis连接池
-func (r *RedisPool) NewRedisPool(max int) {
-	for i := 0;i < max;i++ {
-		go func() {
-			r.Pool <- CreateClient()
-		}()
+func NewRedisPool(config RedisConfig) (*RedisPool, error) {
+	if config.PoolNum == 0 {
+		return &RedisPool{}, errors.New("请输入连接池个数")
 	}
 
-	time.Sleep(5 * time.Second)
+	pool := &RedisPool{
+		Num:  config.PoolNum,
+		Pool: make(chan *redis.Client, config.PoolNum),
+	}
+
+	go func () {
+		for i := 0;i < config.PoolNum;i++ {
+			go func(i int) {
+				pool.Pool <- CreateClient(config)
+			}(i)
+		}
+	}()
+
+	return pool, nil
 }
