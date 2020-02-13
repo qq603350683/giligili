@@ -15,9 +15,9 @@ func NewRouter() {
 
 	r.GET("/video/:v_id", controller.GetVideoInfo)
 	r.GET("/videos/:offset/:limit", controller.GetListVideo)
-	r.POST("/videos", controller.CreateVideo)
+	r.POST("/video", controller.CreateVideo)
 	r.PUT("/video/:v_id", controller.UpdateVideo)
-	r.DELETE("/video/:v_id", controller.DeleteVideo)
+	r.DELETE("/video/:v_id", controller.DelVideo)
 
 	err := r.Run()
 	if err != nil {
