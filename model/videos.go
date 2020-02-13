@@ -1,6 +1,9 @@
 package model
 
 import (
+	"encoding/json"
+	"fmt"
+	"giligili/cache"
 	"giligili/message"
 	"giligili/serializer"
 	"giligili/util"
@@ -10,14 +13,14 @@ import (
 )
 
 type Video struct {
-	VId       int    `json:"v_id" gorm:"type:int(10) unsigned auto_increment;primary_key;"`
+	VId       uint    `json:"v_id" gorm:"type:int(10) unsigned auto_increment;primary_key;"`
 	Title     string `json:"title" gorm:"type:varchar(30);not null"`
 	Info      string `json:"info" gorm:"type:varchar(30);not null"`
 	Browse    int `json:"browse" gorm:"type:int(10) unsigned;not null"`
 	Love      int `json:"love" gorm:"type:int(10) unsigned;not null"`
-	CreatedAt time.Time `json:"created_at" gorm:"type:datetime;not null"`
-	UpdatedAt time.Time `json:"update_at" gorm:"type:datetime;not null"`
-	DelAt time.Time `json:"-" gorm:"type:datetime;not null;default:'1000-01-01 00:00:00'"`
+	CreatedAt time.Time `json:"created_at" gorm:"type:ToDatetime;not null"`
+	UpdatedAt time.Time `json:"update_at" gorm:"type:ToDatetime;not null"`
+	DelAt time.Time `json:"del_at" gorm:"type:ToDatetime;not null;default:'1000-01-01 00:00:00'"`
 }
 
 type CreateVideoSerivce struct {
@@ -60,19 +63,58 @@ func (service *CreateVideoSerivce) CreateVideo() serializer.JsonResponse {
 		return serializer.Json(http.StatusInternalServerError, "视频保存失败", nil, err.Error())
 	}
 
+	fmt.Println(video)
+
 	info := BuildVideo(&video)
+
+	// 写入缓存
+	go video.BuildInfoCache()
 
 	return serializer.Json(http.StatusOK, "视频保存成功", info, "")
 }
 
+func GetInfoById(v_id uint) *Video {
+	// 获取缓存的数据
+
+	video := Video {
+		VId: v_id,
+		DelAt: time.Now(),
+	}
+
+	err := DB.Where("v_id = ?", v_id).First(&video).Error
+	video.BuildInfoCache()
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return &video
+		}
+		return &video
+	}
+
+	if util.ToDatetime(video.DelAt) == DelAtDefault {
+		return &video
+	}
+
+	return &video
+}
+
+
 // 修改视频
-func (service *UpdateVideoService) UpdateVideo(v_id int) serializer.JsonResponse {
-	var video Video
+func (service *UpdateVideoService) UpdateVideo(v_id uint) serializer.JsonResponse {
+	video := &Video {
+		VId: v_id,
+		DelAt: time.Now(),
+	}
+
+	video = GetInfoById(v_id)
+	if IsDel(video.DelAt) {
+		return serializer.Json(http.StatusNotFound, message.NotFound, nil, "")
+	}
 
 	err := DB.Select("v_id").Where("v_id = ?", v_id).Where("del_at = ?", DelAtDefault).First(&video).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return serializer.Json(http.StatusNotFound, "找不到当前记录", nil, err.Error())
+			video.BuildInfoCache()
+			return serializer.Json(http.StatusNotFound, message.NotFound, nil, err.Error())
 		}
 		return serializer.Json(http.StatusInternalServerError, "视频修改失败~", nil, err.Error())
 	}
@@ -85,7 +127,9 @@ func (service *UpdateVideoService) UpdateVideo(v_id int) serializer.JsonResponse
 		return serializer.Json(http.StatusInternalServerError, "视频修改失败~", nil, err.Error())
 	}
 
-	info := BuildVideo(&video)
+	go video.DelInfoCache()
+
+	info := BuildVideo(video)
 
 	return serializer.Json(http.StatusOK, "视频修改成功", info, "")
 }
@@ -114,14 +158,12 @@ func DeleteVideo(v_id int) serializer.JsonResponse {
 
 // 获取视频
 func GetVideoInfo(v_id int) serializer.JsonResponse {
-	//re, _ := cache.RedisCache.Get()
-	//result, _ := re.Get("hello").Result()
-
 	var video Video
 
-	err := DB.Select("v_id, info, browse, love, created_at").Where("v_id = ?", v_id).Where("del_at = ?", DelAtDefault).First(&video).Error
+	err := DB.Select("v_id, title, info, browse, love, created_at").Where("v_id = ?", v_id).Where("del_at = ?", DelAtDefault).First(&video).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
+
 			return serializer.Json(http.StatusNotFound, message.NotFound, nil, err.Error())
 		}
 		return serializer.Json(http.StatusInternalServerError, "查找数据失败~", nil, err.Error())
@@ -135,6 +177,8 @@ func GetVideoInfo(v_id int) serializer.JsonResponse {
 	
 	info := BuildVideo(&video)
 
+	// 写入缓存
+
 	return serializer.Json(http.StatusOK, message.OK, info, "")
 }
 
@@ -146,7 +190,7 @@ func BuildVideo(video *Video) map[string]interface{} {
 		"info": video.Info,
 		"browse" : video.Browse,
 		"love": video.Love,
-		"created_at": util.Datetime(video.CreatedAt),
+		"created_at": util.ToDatetime(video.CreatedAt),
 	}
 }
 
@@ -164,10 +208,52 @@ func BuildListVideo(videos []Video) []map[string]interface{} {
 			"v_id": video.VId,
 			"title": video.Title,
 			"info": video.Info,
-			"created_at": util.Datetime(video.CreatedAt),
+			"created_at": util.ToDatetime(video.CreatedAt),
 		})
 	}
 
 	return list
+}
+
+func (video *Video) BuildInfoCache() bool {
+	client, err := cache.RedisCache.Get()
+	if err != nil {
+		panic("Redis: 连接池获取Redis失败")
+	}
+
+	defer cache.RedisCache.Put(client)
+
+	str := util.GetEmptyJsonByte()
+
+	if video.VId > 0 {
+		str, err = json.Marshal(video)
+		if err != nil {
+			panic("Redis: 转化Video结构体失败")
+		}
+	}
+
+	err = client.Set(cache.VideoInfoKey(video.VId), str, 0).Err()
+	if err != nil {
+		panic("Redis: 设置" + cache.VideoBrowseKey(video.VId) + "失败")
+	}
+
+	return true
+}
+
+// 删除Redis缓存
+func (video *Video) DelInfoCache() bool {
+	client, err := cache.RedisCache.Get()
+	if err != nil {
+		panic("Redis: 连接池获取Redis失败")
+	}
+
+	defer cache.RedisCache.Put(client)
+
+	err = client.Del(cache.VideoInfoKey(video.VId)).Err()
+	if err != nil {
+		panic("Redis: 删除" + cache.VideoBrowseKey(video.VId) + "失败")
+	}
+
+	return true
 }
 

@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+
+
 // Redis 集群
 type RedisPool struct {
 	Num int

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"giligili/util"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"time"
@@ -9,6 +10,7 @@ import (
 var DB *gorm.DB
 
 var DelAtDefault string
+var DelAtDefaultTime time.Time
 
 // Database 在中间件仲初始化Mysql链接
 func Database(connString string) {
@@ -32,6 +34,8 @@ func Database(connString string) {
 
 	// 软删除默认值设置
 	DelAtDefault = "1000-01-01 00:00:00"
+
+	DelAtDefaultTime = util.ToTime(DelAtDefault)
 
 	migration()
 }

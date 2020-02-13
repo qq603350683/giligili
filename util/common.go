@@ -22,6 +22,13 @@ func ToInt(str string) (int, error) {
 	return i, nil
 }
 
+// 转化为正整数数字类型
+func ToUint(str string) (uint, error) {
+	i, err := ToInt(str)
+
+	return uint(i), err
+}
+
 // 字符串过滤
 func Filter(str string) string {
 	str = XssFilter(str)
@@ -57,4 +64,11 @@ func IsString(data interface{}) bool {
 	}
 
 	return false
+}
+
+// 获取空json结构的[]byte
+func GetEmptyJsonByte() []byte {
+	s := "{xxx}"
+
+	return []byte(s)
 }
