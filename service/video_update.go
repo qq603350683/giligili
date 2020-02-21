@@ -22,12 +22,16 @@ func (service *UpdateVideoService) UpdateVideo(v_id uint) serializer.JsonRespons
 		DelAt: time.Now(),
 	}
 
-	video = model.GetInfoById(v_id)
+	err := video.GetInfoById()
+	if err != nil {
+		return serializer.Json(http.StatusInternalServerError, "修改失败~", nil, err.Error())
+	}
+
 	if model.IsDel(video.DelAt) {
 		return serializer.Json(http.StatusNotFound, message.NotFound, nil, "")
 	}
 
-	err := model.DB.Select("v_id").Where("v_id = ?", v_id).Where("del_at = ?", model.DelAtDefault).First(&video).Error
+	err = model.DB.Select("v_id").Where("v_id = ?", v_id).Where("del_at = ?", model.DelAtDefault).First(&video).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			video.BuildInfoCache()
@@ -44,7 +48,7 @@ func (service *UpdateVideoService) UpdateVideo(v_id uint) serializer.JsonRespons
 		return serializer.Json(http.StatusInternalServerError, "视频修改失败~", nil, err.Error())
 	}
 
-	go video.DelInfoCache()
+	go video.BuildInfoCache()
 
 	info := serializer.BuildVideo(video)
 

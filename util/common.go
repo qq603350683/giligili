@@ -29,6 +29,11 @@ func ToUint(str string) (uint, error) {
 	return uint(i), err
 }
 
+// 数字转化为字符串
+func ToString(i int) string {
+	return strconv.Itoa(i)
+}
+
 // 字符串过滤
 func Filter(str string) string {
 	str = XssFilter(str)

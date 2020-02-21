@@ -20,7 +20,7 @@ func BuildVideo(video *model.Video) map[string]interface{} {
 		VId: video.VId,
 		Title: video.Title,
 		Info: video.Info,
-		Browse : video.Browse,
+		Browse : model.GetVideoBrowse(video.VId),
 		Love: video.Love,
 		CreateAt: util.ToDatetime(video.CreatedAt),
 	}
@@ -40,7 +40,7 @@ func BuildVideoList(videos []model.Video) []map[string]interface{} {
 			VId: video.VId,
 			Title: video.Title,
 			Info: video.Info,
-			Browse: video.Browse,
+			Browse: model.GetVideoBrowse(video.VId),
 			Love: video.Love,
 			CreateAt: util.ToDatetime(video.CreatedAt),
 		})

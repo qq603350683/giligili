@@ -28,6 +28,7 @@ func Init() {
 		PoolNum:  num,
 	}
 
+	SetRedisNil()
 	cache, _ := NewRedisPool(config)
 
 	RedisCache = cache

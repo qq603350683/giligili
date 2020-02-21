@@ -7,7 +7,8 @@ import (
 	"time"
 )
 
-
+var RedisNil error
+//var RedisInstance *redis.Client
 
 // Redis 集群
 type RedisPool struct {
@@ -21,6 +22,10 @@ type RedisConfig struct {
 	Password string
 	DB int
 	PoolNum int
+}
+
+func SetRedisNil() {
+	RedisNil = redis.Nil
 }
 
 // 创建Redis实例
@@ -54,6 +59,10 @@ func (r *RedisPool) Get() (*redis.Client, error) {
 			return nil, errors.New("系统繁忙~")
 		}
 	}
+
+	defer r.Put(client)
+
+	//RedisInstance = client
 
 	return client, nil
 }

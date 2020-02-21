@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"giligili/model"
 	"giligili/serializer"
 	"giligili/util"
@@ -25,10 +24,7 @@ func (service *CreateVideoSerivce) CreateVideo() serializer.JsonResponse {
 		return serializer.Json(http.StatusInternalServerError, "视频保存失败", nil, err.Error())
 	}
 
-	fmt.Println(video)
-
 	info := serializer.BuildVideo(&video)
-	fmt.Println(info)
 	// 写入缓存
 	go video.BuildInfoCache()
 
