@@ -118,20 +118,16 @@ func (video *Video) IncrBrowse() error {
 	}
 
 	video.Browse += 1
-	fmt.Println("1")
 	// 更新缓存
 	client, err := cache.RedisCache.Get()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("2")
 	member := util.ToString(int(video.VId))
-	result, err := client.ZIncrBy(cache.VideoBrowseListKey(), 1.01, member).Result()
-	fmt.Println(result)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("3")
+
+	fmt.Println(client.Do("zincrby", cache.VideoBrowseListKey(), 1, member).Result())
+	//client.ZIncrBy(cache.VideoBrowseListKey(), 1, member).Result()
+
 	// 每100个播放量更新数据库, 缓存一次
 	if video.Browse % 100 == 0 {
 		err = DB.Model(video).UpdateColumn("browse", video.Browse).Error
