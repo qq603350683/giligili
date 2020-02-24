@@ -3,7 +3,6 @@ package model
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"giligili/cache"
 	"giligili/util"
 	"github.com/go-redis/redis"
@@ -54,20 +53,21 @@ func (video *Video) GetInfoById() error {
 	if IsDel(video.DelAt) {
 		return nil
 	}
+
 	// 写入浏览数缓存
-	video.SetVideoBrowse()
+	video.GetVideoBrowse()
 
 	return nil
 }
 
 // 获取视频的浏览量
-func GetVideoBrowse(v_id uint) uint {
+func (video *Video) GetVideoBrowse() uint {
 	client, err := cache.RedisCache.Get()
 	if err != nil {
 		panic("Redis: 连接池获取Redis失败")
 	}
 
-	member := util.ToString(int(v_id))
+	member := util.ToString(int(video.VId))
 
 	result, err := client.ZScore(cache.VideoBrowseListKey(), member).Result()
 	if err != nil {
@@ -76,7 +76,6 @@ func GetVideoBrowse(v_id uint) uint {
 		}
 
 		// 这里执行SetVideoBrowse为了防止redis击穿
-		video := NewVideo(v_id)
 		return video.SetVideoBrowse()
 	}
 
@@ -117,19 +116,47 @@ func (video *Video) IncrBrowse() error {
 		return errors.New("Video: " + util.ToString(int(video.VId)) + " 已是删除数据")
 	}
 
-	video.Browse += 1
 	// 更新缓存
 	client, err := cache.RedisCache.Get()
 	if err != nil {
 		panic(err)
 	}
+
 	member := util.ToString(int(video.VId))
 
-	fmt.Println(client.Do("zincrby", cache.VideoBrowseListKey(), 1, member).Result())
-	//client.ZIncrBy(cache.VideoBrowseListKey(), 1, member).Result()
+	// 获取缓存
+	browse, err := client.ZScore(cache.VideoBrowseListKey(), member).Result()
+	if err != nil {
+		if err != cache.RedisNil {
+			panic(err)
+		}
+
+		browse = float64(video.Browse + 1)
+
+		// 设置缓存
+		z := redis.Z {
+			Score: browse,
+			Member: member,
+		}
+		err = client.ZAdd(cache.VideoBrowseListKey(), z).Err()
+		if err != nil {
+			panic(err)
+		}
+
+
+	} else {
+		err := client.ZIncrBy(cache.VideoBrowseListKey(), 1, member).Err()
+		if err != nil {
+			panic(err)
+		}
+
+		browse += 1
+	}
+
+	video.Browse = uint(browse)
 
 	// 每100个播放量更新数据库, 缓存一次
-	if video.Browse % 100 == 0 {
+	if video.Browse % 20 == 0 {
 		err = DB.Model(video).UpdateColumn("browse", video.Browse).Error
 		if err != nil {
 			panic(err)
