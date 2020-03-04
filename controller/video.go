@@ -64,6 +64,7 @@ func DelVideo(c *gin.Context) {
 	serializer.Response(c, res)
 }
 
+// 获取详情
 func GetVideoInfo(c *gin.Context) {
 	v_id, err := util.ToUint(c.Param("v_id"))
 	if err != nil {

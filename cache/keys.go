@@ -2,7 +2,7 @@ package cache
 
 import (
 	"fmt"
-	"strconv"
+	"giligili/util"
 )
 
 // 视频详情
@@ -11,7 +11,13 @@ func VideoInfoKey(v_id uint) string {
 		return ""
 	}
 
-	return fmt.Sprintf("video:info:%s", strconv.Itoa(int(v_id)))
+	return fmt.Sprintf("video:info:%s", util.ToString(int(v_id)))
+}
+
+// 视频列表
+func VideoListKey() string {
+	// ZRevRange video:list 0 20 withscores
+	return fmt.Sprintf("video:list")
 }
 
 // 视频浏览数Zset
