@@ -7,6 +7,7 @@ import (
 	"giligili/util"
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
+	"math/rand"
 	"time"
 )
 
@@ -207,7 +208,15 @@ func (video *Video) BuildInfoCache() bool {
 		}
 	}
 
-	err = client.Set(cache.VideoInfoKey(video.VId), str, 0).Err()
+	expiration := 0 * time.Second
+	if IsDel(video.DelAt) {
+		expiration = time.Duration(rand.Intn(3000 - 600 + 1) + 600) * time.Second
+	} else {
+		// 加入到普通列表缓存中去
+		video.BuildInVideoList()
+	}
+
+	err = client.Set(cache.VideoInfoKey(video.VId), str, expiration).Err()
 	if err != nil {
 		panic("Redis: 设置" + cache.VideoInfoKey(video.VId) + "失败")
 	}
@@ -229,4 +238,36 @@ func (video *Video) DelInfoCache() bool {
 
 	return true
 }
+
+func (video *Video) BuildInVideoList() bool {
+	client, err := cache.RedisCache.Get()
+	if err != nil {
+		panic("Redis: 连接池获取Redis失败")
+	}
+
+	// 判断key是否存在
+	result, err := client.Exists(cache.VideoListKey()).Result()
+	if err != nil && err != cache.RedisNil {
+		panic(err)
+	}
+
+	if result == 0 {
+		// 热备份
+		
+		return true
+	}
+
+	z := redis.Z {
+		Score:  float64(video.VId),
+		Member: video.VId,
+	}
+
+	err = client.ZAdd(cache.VideoListKey(), z).Err()
+	if (err != nil) {
+		panic(err)
+	}
+
+	return true
+}
+
 

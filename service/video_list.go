@@ -15,7 +15,6 @@ import (
 // 获取投稿视频列表
 func GetListVideo(offset uint, limit uint) serializer.JsonResponse {
 	// 没有缓存到的视频数组ID
-	var uncache_vids []uint
 	var videos []model.Video
 	var v_ids []uint
 
@@ -28,7 +27,7 @@ func GetListVideo(offset uint, limit uint) serializer.JsonResponse {
 		panic(err)
 	}
 
-	result, err := client.ZRevRangeWithScores(cache.VideoListKey(), int64(offset), int64(limit)).Result()
+	result, err := client.ZRevRangeWithScores(cache.VideoListKey(), int64(offset), int64(offset + limit - 1)).Result()
 	if err != nil && err != cache.RedisNil {
 		panic(err)
 	}
@@ -48,7 +47,7 @@ func GetListVideo(offset uint, limit uint) serializer.JsonResponse {
 		if err != nil && err != cache.RedisNil {
 			panic(err)
 		}
-
+		fmt.Println(cmders)
 		for _, cmder := range(cmders) {
 			i := v_ids[0]
 			v_ids = v_ids[1:]
@@ -61,7 +60,7 @@ func GetListVideo(offset uint, limit uint) serializer.JsonResponse {
 			video := *model.NewVideo(i)
 
 			if err == cache.RedisNil {
-				uncache_vids = append(uncache_vids, i)
+				video.GetInfoById()
 			} else {
 				err = json.Unmarshal([]byte(res), &video)
 				if err != nil {
@@ -73,31 +72,44 @@ func GetListVideo(offset uint, limit uint) serializer.JsonResponse {
 		}
 
 		list := serializer.BuildVideoList(videos)
-		fmt.Println("走缓存咯~")
+
 		return serializer.Json(http.StatusOK, message.OK, list, "")
-	}
+	} else {
+		err = model.DB.Where("del_at = ?", model.DelAtDefault).Order("v_id desc").Limit(5000).Find(&videos).Error
 
-	err = model.DB.Where("del_at = ?", model.DelAtDefault).Order("v_id desc").Limit(5000).Find(&videos).Error
-	if err != nil {
-		return serializer.Json(http.StatusInternalServerError, "数据查询失败~", nil, err.Error())
-	}
+		var rediszs []redis.Z
 
-	list := serializer.BuildVideoList(videos)
+		if err != nil {
+			client.ZAdd(cache.VideoListKey(), rediszs...)
 
-	var rediszs []redis.Z
-
-	for _, video := range(videos) {
-		//video.BuildInfoCache()
-
-		z := redis.Z{
-			Score:  float64(video.VId),
-			Member: video.VId,
+			return serializer.Json(http.StatusInternalServerError, "数据查询失败~", nil, err.Error())
 		}
 
-		rediszs = append(rediszs, z)
+		for _, video := range(videos) {
+			video.BuildInfoCache()
+
+			z := redis.Z {
+				Score:  float64(video.VId),
+				Member: video.VId,
+			}
+
+			rediszs = append(rediszs, z)
+		}
+
+		err = client.ZAdd(cache.VideoListKey(), rediszs...).Err()
+		if (err != nil) {
+			panic(err)
+		}
+
+		l := uint(len(videos))
+		if l <= limit {
+			limit = l
+		}
+
+		videos := videos[0:limit]
+
+		list := serializer.BuildVideoList(videos)
+
+		return serializer.Json(http.StatusOK, message.OK, list, "")
 	}
-
-	client.ZAdd(cache.VideoListKey(), rediszs...)
-
-	return serializer.Json(http.StatusOK, message.OK, list, "")
 }
