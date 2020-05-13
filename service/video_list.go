@@ -85,6 +85,13 @@ func GetListVideo(offset uint, limit uint) serializer.JsonResponse {
 			return serializer.Json(http.StatusInternalServerError, "数据查询失败~", nil, err.Error())
 		}
 
+		count := len(videos)
+
+		// 空数据处理
+		if count == 0 {
+			return serializer.Json(http.StatusOK, message.EmptyList, nil, "")
+		}
+
 		for _, video := range(videos) {
 			video.BuildInfoCache()
 
@@ -101,7 +108,7 @@ func GetListVideo(offset uint, limit uint) serializer.JsonResponse {
 			panic(err)
 		}
 
-		l := uint(len(videos))
+		l := uint(count)
 		if l <= limit {
 			limit = l
 		}
