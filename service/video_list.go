@@ -89,8 +89,7 @@ func GetListVideo(offset uint, limit uint) serializer.JsonResponse {
 
 		// 空数据处理
 		if count == 0 {
-			a := make([]map[string]interface{}, 0)
-			return serializer.Json(http.StatusOK, message.EmptyList, a, "")
+			return serializer.Json(http.StatusOK, message.EmptyList, model.EmptyList, "")
 		}
 
 		for _, video := range(videos) {

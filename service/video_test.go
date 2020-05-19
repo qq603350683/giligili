@@ -25,10 +25,9 @@ func testGetEmptyList(t *testing.T) {
 	}
 
 	marshal, _ := json.Marshal(resp.Data)
-	fmt.Printf("%s", string(marshal))
-	//if string(marshal) != "{}" {
-	//	t.Errorf("testGetEmptyInfo fail: %v", err.Error())
-	//}
+	if string(marshal) != "[]" {
+		t.Errorf("testGetEmptyInfo fail: %v", "数据不是空列表")
+	}
 }
 
 func testGetList(t *testing.T) {
@@ -37,8 +36,9 @@ func testGetList(t *testing.T) {
 		t.Errorf("testGetList fail: %v %v", resp.Status, resp.Message)
 	}
 
-	if reflect.TypeOf(resp.Data) == test.EmptyListType {
-		t.Errorf("testGetList fail: %v %v", resp.Status, "列表数据为空")
+	marshal, _ := json.Marshal(resp.Data)
+	if string(marshal) == "[]" {
+		t.Errorf("testGetList fail: %v", "列表数据为空")
 	}
 }
 
@@ -76,8 +76,6 @@ func testGetInfo(t *testing.T) {
 	if resp.Status == http.StatusNotFound {
 		t.Errorf("testGetInfo fail: %v %v", resp.Status, resp.Message)
 	}
-
-	fmt.Println(resp.Data, reflect.ValueOf(resp.Data), reflect.TypeOf(resp.Data))
 }
 
 func testCreate(t *testing.T) {
@@ -105,10 +103,24 @@ func testUpdate(t *testing.T) {
 		t.Errorf("testUpdate fail: %v %v", resp.Status, resp.Message)
 	}
 
-	fmt.Println(resp.Data)
+	marshal, _ := json.Marshal(resp.Data)
+	if string(marshal) == "{}" {
+		t.Errorf("testUpdate fail: %v %v", resp.Status, "更新失败")
+	}
 
-	if reflect.TypeOf(resp.Data) == test.EmptyListType {
-		t.Errorf("testUpdate fail: %v %v", resp.Status, "数据为空")
+	video := model.NewVideo(VID)
+
+	err := video.GetInfoById()
+	if err != nil {
+		t.Errorf("testUpdate fail: %v %v", resp.Status, "查找数据失败")
+	}
+
+	if video.Title != UpdateTitle {
+		t.Errorf("testUpdate fail: %v", "标题更新失败")
+	}
+
+	if video.Info != UpdateInfo {
+		t.Errorf("testUpdate fail: %v", "描述更新失败")
 	}
 }
 

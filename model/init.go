@@ -12,6 +12,8 @@ var DB *gorm.DB
 var DelAtDefault string
 var DelAtDefaultTime time.Time
 
+var EmptyList []map[string]interface{}
+
 // Database 在中间件仲初始化Mysql链接
 func Database(connString string) {
 	// connString 用户名:密码@(主机地址:端口)/数据库名称?charset=utf8&parseTime=True&loc=Local
