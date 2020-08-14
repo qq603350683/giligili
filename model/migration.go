@@ -4,4 +4,6 @@ package model
 
 func migration() {
 	DB.AutoMigrate(&Video{})
+	DB.AutoMigrate(&Users{})
+	DB.AutoMigrate(&UserTokens{})
 }

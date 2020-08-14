@@ -2,8 +2,12 @@ package main
 
 import (
 	"fmt"
+	"giligili/cache"
+	"giligili/model"
 	"github.com/gorilla/websocket"
+	"github.com/joho/godotenv"
 	"net/http"
+	"os"
 )
 
 type WebsocketPool struct {
@@ -33,6 +37,17 @@ func main() {
 	//http.HandleFunc("/", func (w http.ResponseWriter, r *http.Request) {
 	//	w.Write([]byte("hello world"))
 	//})
+	// 读取本地环境变量
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
+
+	// 链接数据库
+	model.Database(os.Getenv("MYSQL_DSN"))
+
+	// 初始化数据库连接池
+	cache.Init()
 
 	WebsocketConns = NewWebsocketPool()
 
@@ -104,10 +119,10 @@ func main() {
 
 	fmt.Println("启动....")
 
-	err := http.ListenAndServe("127.0.0.1:8888", nil)
+	err = http.ListenAndServe("127.0.0.1:8888", nil)
 	if (err != nil) {
 		panic(err)
 	}
 
-	fmt.Println("zzz")
+	fmt.Println("不会执行到这里....")
 }

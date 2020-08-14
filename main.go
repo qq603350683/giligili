@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func main() {
+func main1() {
 	// 读取本地环境变量
 	err := godotenv.Load()
 	if err != nil {
