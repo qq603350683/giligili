@@ -1,6 +1,7 @@
 package serializer
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"reflect"
@@ -21,6 +22,22 @@ func Exit(c *gin.Context, status int, message string, err string) {
 // 在控制器直接返回信息
 func Response(c *gin.Context, data JsonResponse) {
 	c.JSON(http.StatusOK, data)
+}
+
+func JsonByte(status int, message string, data interface{}, err string) []byte {
+	jr := JsonResponse{
+		Status:  status,
+		Message: message,
+		Data:    data,
+		Error:   err,
+	}
+
+	b, err2 := json.Marshal(jr)
+	if err2 != nil {
+		panic(err)
+	}
+
+	return b
 }
 
 // 返回数据使用

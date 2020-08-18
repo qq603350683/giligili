@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"giligili/cache"
 	"giligili/model"
+	"giligili/routes"
 	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
 	"net/http"
@@ -98,7 +99,9 @@ func main() {
 				switch mtype {
 				case 1:
 					//TextMessage
-					conn.WriteMessage(mtype, content)
+					str := routes.Socket(content)
+
+					conn.WriteMessage(mtype, str)
 				case 2:
 					// BinaryMessage
 				case 8:
