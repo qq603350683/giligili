@@ -1,8 +1,11 @@
-package main
+package socket
 
 import (
 	"fmt"
+	"giligili/model"
+	"giligili/routes"
 	"github.com/gorilla/websocket"
+	"log"
 	"net/http"
 )
 
@@ -29,11 +32,14 @@ func NewWebsocketPool() *WebsocketPool {
 	return pool
 }
 
-func main() {
-	//http.HandleFunc("/", func (w http.ResponseWriter, r *http.Request) {
-	//	w.Write([]byte("hello world"))
-	//})
+// 发送消息
+func SendMessage(u_id int, message []byte) {
+	if conn, ok := WebsocketConns.connects[u_id]; ok {
+		conn.WriteMessage(1, message)
+	}
+}
 
+func Run() {
 	WebsocketConns = NewWebsocketPool()
 
 	http.HandleFunc("/qqq", func (w http.ResponseWriter, r *http.Request) {
@@ -58,7 +64,13 @@ func main() {
 				return
 			}
 
-			u_id := 1
+			u_id := model.GetUIDByToken(token)
+			if u_id == 0 {
+				conn.WriteMessage(1, []byte("请关闭链接"))
+				return
+			}
+
+			log.Printf("登录成功: %s", u_id)
 
 			WebsocketConns.num <- 1
 			WebsocketConns.connects[u_id] = conn
@@ -68,6 +80,7 @@ func main() {
 				mtype, content, err := conn.ReadMessage()
 				if err != nil {
 					fmt.Println("客户端主动关闭链接")
+					fmt.Println(err)
 					conn.Close()
 
 					if _, ok := <- WebsocketConns.num; !ok {
@@ -83,7 +96,9 @@ func main() {
 				switch mtype {
 				case 1:
 					//TextMessage
-					conn.WriteMessage(mtype, content)
+					str := routes.Socket(content)
+
+					conn.WriteMessage(mtype, str)
 				case 2:
 					// BinaryMessage
 				case 8:
@@ -109,5 +124,5 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("zzz")
+	fmt.Println("不会执行到这里....")
 }

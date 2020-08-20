@@ -4,7 +4,8 @@ package model
 
 func migration() {
 	DB.AutoMigrate(&Video{})
-	DB.AutoMigrate(&Users{})
-	DB.AutoMigrate(&UserTokens{})
+	DB.AutoMigrate(&User{})
+	DB.AutoMigrate(&UserToken{})
 	DB.AutoMigrate(&Level{})
+	DB.AutoMigrate(&UserPlan{})
 }

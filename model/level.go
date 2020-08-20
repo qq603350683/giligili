@@ -6,9 +6,11 @@ import (
 )
 
 type Level struct {
-	LID int `json:"l_id" gorm:"column:l_id; type: int(10); unsigned auto_increment; primary_key"`
+	LID int `json:"l_id" gorm:"column:l_id;type:int(10) unsigned auto_increment;primary_key"`
+	Level int `json:"level" gorm:"column:level; type: int(10) unsigned; not null; default:0; comment:'关卡'"`
 	Title string `json:"title" gorm:"column:title; type: char(10); not null; default:''; comment:'标题'"`
-	Detail string `json:"detail" gorm:"column:detail; type: text; not null; comment:'关卡详情'"`
+	Background string `json:"background" gorm:"column:background; type: text; not null; comment:'背景详情 image - 背景图 speed - 速度'"`
+	Virus string `json:"virus" gorm:"column:detail; type: text; not null; comment:'病毒位置'"`
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at; type:datetime; not null; comment:'创建时间'"`
 	DelAt time.Time `json:"-" gorm:"type:datetime;not null;default:'1000-01-01 00:00:00'; comment:'删除时间'"`
 }

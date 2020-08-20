@@ -28,9 +28,11 @@ func Socket(msg []byte) []byte {
 		level_get := model.NewLevelGet()
 		err = json.Unmarshal([]byte(m.Content), level_get)
 		l, _ := model.GetLevelByID(level_get.LID)
-		//l, _ := model.GetLevelList()
 
 		return serializer.JsonByte(http.StatusOK, "success", l, "")
+	case "user":
+		// 我的详情
+		
 	}
 
 	return serializer.JsonByte(http.StatusOK, "success", nil, "")
