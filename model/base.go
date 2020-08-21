@@ -5,6 +5,9 @@ import (
 	"time"
 )
 
+// 全局u_id
+var UID int
+
 func IsDel(deltime time.Time) bool {
 	if deltime != DelAtDefaultTime {
 		return true

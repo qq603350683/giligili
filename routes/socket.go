@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"giligili/model"
 	"giligili/serializer"
+	"giligili/service"
 	"net/http"
 )
 
@@ -32,7 +33,12 @@ func Socket(msg []byte) []byte {
 		return serializer.JsonByte(http.StatusOK, "success", l, "")
 	case "user":
 		// 我的详情
-		
+		user, err := service.GetUserInfo(model.UID)
+		if err != nil {
+			return serializer.JsonByte(http.StatusInternalServerError, err.Error(), nil, err.Error())
+		}
+
+		return  serializer.JsonByte(http.StatusOK, "succes", user, "")
 	}
 
 	return serializer.JsonByte(http.StatusOK, "success", nil, "")

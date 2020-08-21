@@ -25,6 +25,10 @@ func Response(c *gin.Context, data JsonResponse) {
 }
 
 func JsonByte(status int, message string, data interface{}, err string) []byte {
+	if data == nil {
+		data = map[string]interface{} {}
+	}
+
 	jr := JsonResponse{
 		Status:  status,
 		Message: message,

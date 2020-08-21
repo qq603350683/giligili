@@ -1,7 +1,7 @@
 package service
 
 import (
-	"giligili/message"
+	"giligili/constbase"
 	"giligili/model"
 	"giligili/serializer"
 	"giligili/util"
@@ -28,14 +28,14 @@ func (service *UpdateVideoService) UpdateVideo(v_id uint) serializer.JsonRespons
 	}
 
 	if model.IsDel(video.DelAt) {
-		return serializer.Json(http.StatusNotFound, message.NotFound, nil, "")
+		return serializer.Json(http.StatusNotFound, constbase.NotFound, nil, "")
 	}
 
 	err = model.DB.Select("v_id").Where("v_id = ?", v_id).Where("del_at = ?", model.DelAtDefault).First(&video).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			video.BuildInfoCache()
-			return serializer.Json(http.StatusNotFound, message.NotFound, nil, err.Error())
+			return serializer.Json(http.StatusNotFound, constbase.NotFound, nil, err.Error())
 		}
 		return serializer.Json(http.StatusInternalServerError, "视频修改失败~", nil, err.Error())
 	}

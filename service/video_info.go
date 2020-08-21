@@ -1,7 +1,7 @@
 package service
 
 import (
-	"giligili/message"
+	"giligili/constbase"
 	"giligili/model"
 	"giligili/serializer"
 	"net/http"
@@ -17,12 +17,12 @@ func GetVideoInfo(v_id uint) serializer.JsonResponse {
 	}
 
 	if model.IsDel(video.DelAt) {
-		return serializer.Json(http.StatusNotFound, message.OK, nil, "")
+		return serializer.Json(http.StatusNotFound, constbase.OK, nil, "")
 	}
 
 	video.IncrBrowse()
 
 	info := serializer.BuildVideo(video)
 
-	return serializer.Json(http.StatusOK, message.OK, info, "")
+	return serializer.Json(http.StatusOK, constbase.OK, info, "")
 }

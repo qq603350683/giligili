@@ -2,11 +2,14 @@ package socket
 
 import (
 	"fmt"
+	"giligili/constbase"
 	"giligili/model"
 	"giligili/routes"
+	"giligili/serializer"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"time"
 )
 
 type WebsocketPool struct {
@@ -35,7 +38,7 @@ func NewWebsocketPool() *WebsocketPool {
 // 发送消息
 func SendMessage(u_id int, message []byte) {
 	if conn, ok := WebsocketConns.connects[u_id]; ok {
-		conn.WriteMessage(1, message)
+		conn.WriteMessage(constbase.WEBSOCKET_MESSAGE_TYPE_TEXT, message)
 	}
 }
 
@@ -45,20 +48,25 @@ func Run() {
 	http.HandleFunc("/qqq", func (w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrade.Upgrade(w, r, nil)
 		if err != nil {
-			panic(err)
+			log.Printf("websocket 错误: %s", err.Error())
+			return
 		}
 
 		get := r.URL.Query()
 		if len(get) == 0 {
-			panic("登录对象为空")
+			log.Printf("错误链接")
+			return
 		}
 
 		token, ok := get["token"]
 		if !ok {
-			panic("token 不存在")
+			log.Printf("Token 不能为空")
+			return
 		}
 
 		go func(token string, conn *websocket.Conn) {
+			var msg []byte
+
 			if token == "" {
 				fmt.Println("token不能为空")
 				return
@@ -66,49 +74,62 @@ func Run() {
 
 			u_id := model.GetUIDByToken(token)
 			if u_id == 0 {
-				conn.WriteMessage(1, []byte("请关闭链接"))
+				msg = serializer.JsonByte(constbase.WEBSOCKET_CLOSE, "请关闭链接", nil, "")
+				conn.WriteMessage(constbase.WEBSOCKET_MESSAGE_TYPE_TEXT, msg)
 				return
 			}
 
-			log.Printf("登录成功: %s", u_id)
+			log.Printf("登录成功: %d", u_id)
 
-			WebsocketConns.num <- 1
+			// 查看是否重复登录， 重复登录就退出
+			if c, ok := WebsocketConns.connects[u_id]; ok {
+				log.Printf("账户登陆被强制下线: %d", u_id)
+				msg = serializer.JsonByte(constbase.WEBSOCKET_OFFLINE, "您已被强制下线", nil, "")
+				c.WriteMessage(constbase.WEBSOCKET_MESSAGE_TYPE_TEXT, msg)
+
+				// 睡眠0.5秒确保消息客户端收到断开消息后断开链接再覆盖 WebsocketConns.connects
+				time.Sleep(time.Second / 2)
+				c.Close()
+				time.Sleep(time.Second / 2)
+			} else {
+				WebsocketConns.num <- 1
+			}
+
 			WebsocketConns.connects[u_id] = conn
 
+			model.UID = u_id
+
 			for {
-				fmt.Println(WebsocketConns.num)
 				mtype, content, err := conn.ReadMessage()
 				if err != nil {
-					fmt.Println("客户端主动关闭链接")
-					fmt.Println(err)
+					log.Printf("关闭链接: %d, 错误信息: %s", u_id, err.Error())
+					delete(WebsocketConns.connects, u_id)
 					conn.Close()
 
 					if _, ok := <- WebsocketConns.num; !ok {
-						fmt.Println("WebsocketConns.num - 1 fail")
+						log.Printf("WebsocketConns.num - 1 fail")
 						return
 					}
 
-					fmt.Println("玩家数剩余")
-					fmt.Println(len(WebsocketConns.num))
+					log.Printf("当前在线人数为: %d", len(WebsocketConns.num))
 
 					return
 				}
 				switch mtype {
-				case 1:
+				case constbase.WEBSOCKET_MESSAGE_TYPE_TEXT:
 					//TextMessage
 					str := routes.Socket(content)
 
 					conn.WriteMessage(mtype, str)
-				case 2:
+				case constbase.WEBSOCKET_MESSAGE_TYPE_BINARY:
 					// BinaryMessage
-				case 8:
+				case constbase.WEBSOCKET_MESSAGE_TYPE_CLOSE:
 					// CloseMessage
 					fmt.Printf("close....")
 					conn.Close()
-
-				case 9:
+				case constbase.WEBSOCKET_MESSAGE_TYPE_PING:
 					// PingMessage
-				case 10:
+				case constbase.WEBSOCKET_MESSAGE_TYPE_PONG:
 					// PongMessage
 				}
 			}

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"giligili/cache"
-	"giligili/message"
+	"giligili/constbase"
 	"giligili/model"
 	"giligili/serializer"
 	"giligili/util"
@@ -19,7 +19,7 @@ func GetListVideo(offset uint, limit uint) serializer.JsonResponse {
 	var v_ids []uint
 
 	if limit == 0 || offset > 5000 {
-		return serializer.Json(http.StatusOK, message.OK, nil, "")
+		return serializer.Json(http.StatusOK, constbase.OK, nil, "")
 	}
 
 	client, err := cache.RedisCache.Get()
@@ -73,7 +73,7 @@ func GetListVideo(offset uint, limit uint) serializer.JsonResponse {
 
 		list := serializer.BuildVideoList(videos)
 
-		return serializer.Json(http.StatusOK, message.OK, list, "")
+		return serializer.Json(http.StatusOK, constbase.OK, list, "")
 	} else {
 		err = model.DB.Where("del_at = ?", model.DelAtDefault).Order("v_id desc").Limit(5000).Find(&videos).Error
 
@@ -89,7 +89,7 @@ func GetListVideo(offset uint, limit uint) serializer.JsonResponse {
 
 		// 空数据处理
 		if count == 0 {
-			return serializer.Json(http.StatusOK, message.EmptyList, model.EmptyList, "")
+			return serializer.Json(http.StatusOK, constbase.EmptyList, model.EmptyList, "")
 		}
 
 		for _, video := range(videos) {
@@ -117,6 +117,6 @@ func GetListVideo(offset uint, limit uint) serializer.JsonResponse {
 
 		list := serializer.BuildVideoList(videos)
 
-		return serializer.Json(http.StatusOK, message.OK, list, "")
+		return serializer.Json(http.StatusOK, constbase.OK, list, "")
 	}
 }

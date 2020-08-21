@@ -12,7 +12,7 @@ var Token string
 type UserToken struct {
 	UtID int `json:"ut_id" gorm:"column:ut_id;type:int(10) unsigned auto_increment; primary_key;"`
 	UID int `json:"u_id" gorm:"column:u_id;type:int(10) unsigned; not null; index:idx_u_id; comment:'用户ID'"`
-	Token string `json:"token" gorm:"column:token; type: varchar(200); not null; unique_index: uni_token; comment:'token值'"`
+	Token string `json:"token" gorm:"column:token; type: varchar(200); not null; unique_index:uni_token; comment:'token值'"`
 	CreatedAt time.Time `json:"created_at" gorm:"type:datetime; not null; comment:'创建时间'"`
 	ExpiredAt time.Time `json:"expired_at" gorm:"type:datetime; not null; comment:'过期时间'"`
 }
@@ -33,8 +33,8 @@ func GetInfoByToken(token string) *UserToken {
 		return nil
 	}
 
-	if IsExpired(ut.ExpiredAt) {
-		log.Panicln("Token 已经过期")
+	if ut.IsExpired(ut.ExpiredAt) {
+		log.Printf("Token 已经过期 %s", token)
 		return nil
 	}
 
@@ -52,7 +52,7 @@ func GetUIDByToken(token string) int {
 }
 
 // 判断 token 是否已经过期
-func IsExpired(expired_at time.Time) bool {
+func (token *UserToken) IsExpired (expired_at time.Time) bool {
 	if expired_at.Unix() < time.Now().Unix() {
 		return true
 	} else {
