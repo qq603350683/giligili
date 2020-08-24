@@ -2,6 +2,11 @@ package util
 
 import "time"
 
+const (
+	DATE = "2006-01-02"
+	DATETIME = "2006-01-02 15:04:05"
+)
+
 // time.Time 格式转化为字符串格式
 func ToDatetime(datetime time.Time) string {
 	return datetime.Format("2006-01-02 15:04:05")

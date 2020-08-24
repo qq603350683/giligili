@@ -138,12 +138,11 @@ func Run() {
 		}(token[0], conn)
 	})
 
-	fmt.Println("启动....")
+	log.Printf("启动....")
 
 	err := http.ListenAndServe("127.0.0.1:8888", nil)
 	if (err != nil) {
 		panic(err)
 	}
 
-	fmt.Println("不会执行到这里....")
 }

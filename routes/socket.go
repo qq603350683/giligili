@@ -2,10 +2,10 @@ package routes
 
 import (
 	"encoding/json"
-	"fmt"
 	"giligili/model"
 	"giligili/serializer"
 	"giligili/service"
+	"log"
 	"net/http"
 )
 
@@ -15,9 +15,9 @@ type MsgDecode struct {
 }
 
 func Socket(msg []byte) []byte {
-	fmt.Println(string(msg))
+	log.Printf("接收数据: %s", string(msg))
 
-	// 解析json格式
+	// 解析json格式 {"case": "sign_in/count", "content": "{\"l_id\": 1}"}
 	m := &MsgDecode{}
 	err := json.Unmarshal(msg, m)
 	if err != nil {
@@ -38,7 +38,23 @@ func Socket(msg []byte) []byte {
 			return serializer.JsonByte(http.StatusInternalServerError, err.Error(), nil, err.Error())
 		}
 
-		return  serializer.JsonByte(http.StatusOK, "succes", user, "")
+		return  serializer.JsonByte(http.StatusOK, "success", user, "")
+	case "sign_in/create":
+		// 今天签到
+		bool, err := service.CreateSignIn(model.UID)
+		if bool == false {
+			return serializer.JsonByte(http.StatusInternalServerError, err.Error(), nil, err.Error())
+		}
+
+		return  serializer.JsonByte(http.StatusOK, "success", nil, "")
+	case "sign_in/count":
+		// 当前用户本月总签到次数
+		count, err := service.GetSignInMonthCount(model.UID)
+		if err != nil {
+			return serializer.JsonByte(http.StatusInternalServerError, err.Error(), nil, err.Error())
+		}
+
+		return  serializer.JsonByte(http.StatusOK, "success", count, "")
 	}
 
 	return serializer.JsonByte(http.StatusOK, "success", nil, "")

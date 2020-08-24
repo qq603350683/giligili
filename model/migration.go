@@ -8,4 +8,6 @@ func migration() {
 	DB.AutoMigrate(&UserToken{})
 	DB.AutoMigrate(&Level{})
 	DB.AutoMigrate(&UserPlan{})
+	DB.AutoMigrate(&SignIn{})
+	DB.AutoMigrate(&Backpack{})
 }
