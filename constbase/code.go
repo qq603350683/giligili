@@ -1,6 +1,9 @@
 package constbase
 
 const (
+	YES = 1
+	NO = 0
+
 	// 530 ~ 540 是 websocket 专用码
 	// 服务端要求客户端关闭连接
 	WEBSOCKET_CLOSE = 530

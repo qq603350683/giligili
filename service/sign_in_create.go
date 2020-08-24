@@ -18,7 +18,7 @@ func CreateSignIn(u_id int) (bool, error) {
 
 	today := time.Now().Format(util.DATE)
 
-	err := model.DB.Where("u_id = ? AND created_at >= ?", model.UID, today).First(sign_in).Error
+	err := model.DB.Where("u_id = ? AND created_at >= ?", model.UserInfo.UID, today).First(sign_in).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return false, err
 	}

@@ -3,6 +3,7 @@ package cache
 import (
 	"fmt"
 	"giligili/util"
+	"time"
 )
 
 // 视频详情
@@ -23,4 +24,9 @@ func VideoListKey() string {
 // 视频浏览数Zset
 func VideoBrowseListKey() string {
 	return "video:browse:list"
+}
+
+// 记录每个用户当天是否转发
+func UserTodayForwardListKey() string {
+	return "user_today_forward_" + time.Now().Format("20060102")
 }

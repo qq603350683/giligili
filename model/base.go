@@ -6,7 +6,7 @@ import (
 )
 
 // 全局u_id
-var UID int
+var UserInfo *User
 
 func IsDel(deltime time.Time) bool {
 	if deltime != DelAtDefaultTime {

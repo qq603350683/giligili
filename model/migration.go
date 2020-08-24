@@ -10,4 +10,6 @@ func migration() {
 	DB.AutoMigrate(&UserPlan{})
 	DB.AutoMigrate(&SignIn{})
 	DB.AutoMigrate(&Backpack{})
+	DB.AutoMigrate(&ForwardPrize{})
+	DB.AutoMigrate(&Prop{})
 }

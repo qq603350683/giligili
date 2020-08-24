@@ -33,7 +33,7 @@ func Socket(msg []byte) []byte {
 		return serializer.JsonByte(http.StatusOK, "success", l, "")
 	case "user":
 		// 我的详情
-		user, err := service.GetUserInfo(model.UID)
+		user, err := service.GetUserInfo(model.UserInfo.UID)
 		if err != nil {
 			return serializer.JsonByte(http.StatusInternalServerError, err.Error(), nil, err.Error())
 		}
@@ -41,7 +41,7 @@ func Socket(msg []byte) []byte {
 		return  serializer.JsonByte(http.StatusOK, "success", user, "")
 	case "sign_in/create":
 		// 今天签到
-		bool, err := service.CreateSignIn(model.UID)
+		bool, err := service.CreateSignIn(model.UserInfo.UID)
 		if bool == false {
 			return serializer.JsonByte(http.StatusInternalServerError, err.Error(), nil, err.Error())
 		}
@@ -49,12 +49,19 @@ func Socket(msg []byte) []byte {
 		return  serializer.JsonByte(http.StatusOK, "success", nil, "")
 	case "sign_in/count":
 		// 当前用户本月总签到次数
-		count, err := service.GetSignInMonthCount(model.UID)
+		count, err := service.GetSignInMonthCount(model.UserInfo.UID)
 		if err != nil {
 			return serializer.JsonByte(http.StatusInternalServerError, err.Error(), nil, err.Error())
 		}
 
 		return  serializer.JsonByte(http.StatusOK, "success", count, "")
+	case "forward/create":
+		prop, err := service.CreateForward(model.UserInfo.UID)
+		if err != nil {
+			return serializer.JsonByte(http.StatusInternalServerError, err.Error(), nil, err.Error())
+		}
+
+		return  serializer.JsonByte(http.StatusOK, "success", prop, "")
 	}
 
 	return serializer.JsonByte(http.StatusOK, "success", nil, "")

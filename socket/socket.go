@@ -97,7 +97,9 @@ func Run() {
 
 			WebsocketConns.connects[u_id] = conn
 
-			model.UID = u_id
+			user := model.GetUserInfo(u_id)
+
+			model.UserInfo = user
 
 			for {
 				mtype, content, err := conn.ReadMessage()
