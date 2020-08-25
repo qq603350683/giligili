@@ -2,6 +2,7 @@ package model
 
 import (
 	"giligili/cache"
+	"github.com/jinzhu/gorm"
 	"log"
 	"time"
 )
@@ -25,7 +26,11 @@ func GetUserInfo(u_id int) *User {
 
 	err := DB.Where("u_id = ?", u_id).First(user).Error
 	if err != nil {
-		log.Printf("用户ID(%d)找不到记录: ", u_id)
+		if err == gorm.ErrRecordNotFound {
+			log.Printf("用户ID(%d)找不到记录: ", u_id)
+		} else {
+			log.Println(err.Error())
+		}
 		return nil
 	}
 

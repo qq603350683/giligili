@@ -47,6 +47,16 @@ func Socket(msg []byte) []byte {
 		}
 
 		return  serializer.JsonByte(http.StatusOK, "success", nil, "")
+	case "sign_in/prize":
+		// 签到奖励
+		count, err := service.GetSignInMonthCount(model.UserInfo.UID)
+		if err != nil {
+			return serializer.JsonByte(http.StatusInternalServerError, err.Error(), nil, err.Error())
+		}
+
+		prop := service.GetGrandTotalPrize(count)
+
+		return  serializer.JsonByte(http.StatusOK, "success", prop, "")
 	case "sign_in/count":
 		// 当前用户本月总签到次数
 		count, err := service.GetSignInMonthCount(model.UserInfo.UID)
@@ -56,12 +66,17 @@ func Socket(msg []byte) []byte {
 
 		return  serializer.JsonByte(http.StatusOK, "success", count, "")
 	case "forward/create":
+		// 转发
 		prop, err := service.CreateForward(model.UserInfo.UID)
 		if err != nil {
 			return serializer.JsonByte(http.StatusInternalServerError, err.Error(), nil, err.Error())
 		}
 
 		return  serializer.JsonByte(http.StatusOK, "success", prop, "")
+	case "backpack/list":
+		backpacks := service.GetBackpackList(model.UserInfo.UID)
+
+		return  serializer.JsonByte(http.StatusOK, "success", backpacks, "")
 	}
 
 	return serializer.JsonByte(http.StatusOK, "success", nil, "")

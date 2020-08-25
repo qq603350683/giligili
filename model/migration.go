@@ -12,4 +12,6 @@ func migration() {
 	DB.AutoMigrate(&Backpack{})
 	DB.AutoMigrate(&ForwardPrize{})
 	DB.AutoMigrate(&Prop{})
+	DB.AutoMigrate(&SignInPrize{})
+	DB.AutoMigrate(&UserSignInPrize{})
 }

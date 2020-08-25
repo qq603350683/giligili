@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/jinzhu/gorm"
 	"log"
 	"time"
 )
@@ -18,6 +19,28 @@ type Prop struct {
 type PropShow struct {
 	*Prop `comment:"道具详情"`
 	Quantity int `json:"quantity" comment:"数量"`
+}
+
+// 获取道具详情
+func GetPropInfo(p_id int) *Prop {
+	if p_id == 0 {
+		return nil
+	}
+
+	prop := &Prop{}
+
+	err := DB.Where("p_id = ?", p_id).First(prop).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			log.Printf("道具ID(%d)找不到记录: ", p_id)
+		} else {
+			log.Println(err.Error())
+		}
+
+		return nil
+	}
+
+	return prop
 }
 
 // 道具加入到背包

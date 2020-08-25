@@ -32,6 +32,9 @@ func Database(connString string) {
 	// 超时
 	db.DB().SetConnMaxLifetime(time.Second * 30)
 
+	// 开启SQL打印模式
+	db.LogMode(true)
+
 	DB = db
 
 	// 软删除默认值设置
