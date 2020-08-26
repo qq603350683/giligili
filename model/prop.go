@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/jinzhu/gorm"
 	"log"
+	"math/rand"
 	"time"
 )
 
@@ -41,6 +42,75 @@ func GetPropInfo(p_id int) *Prop {
 	}
 
 	return prop
+}
+
+func GetEnhancerIsSuccess(t string, level int) bool {
+	rand.Seed(time.Now().Unix())
+	i := rand.Intn(100)
+
+	if t == "" {
+		return false
+	}
+
+	if level <= 2 {
+		return true
+	} else if level > 2 && level <= 5 {
+		if i <= 80 {
+			return true
+		} else {
+			return false
+		}
+ 	} else if level > 5 && level <= 7 {
+ 		if i <= 60 {
+ 			return true
+		} else {
+			return false
+		}
+	} else if level == 8 {
+		if i <= 50 {
+			return true
+		} else {
+			return false
+		}
+	} else if level == 9 {
+		if i <= 40 {
+			return true
+		} else {
+			return false
+		}
+	} else if level == 10 {
+		if i <= 30 {
+			return true
+		} else {
+			return false
+		}
+	} else if level == 11 {
+		if i <= 25 {
+			return true
+		} else {
+			return false
+		}
+	} else if level == 12 {
+		if i <= 10 {
+			return true
+		} else {
+			return false
+		}
+	} else if level > 13 && level <= 15 {
+		if i <= 5 {
+			return true
+		} else {
+			return false
+		}
+	} else if level > 16 && level < 20 {
+		if i <= 3 {
+			return true
+		} else {
+			return false
+		}
+	} else {
+		return false
+	}
 }
 
 // 道具加入到背包

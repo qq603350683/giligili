@@ -77,6 +77,14 @@ func Socket(msg []byte) []byte {
 		backpacks := service.GetBackpackList(model.UserInfo.UID)
 
 		return  serializer.JsonByte(http.StatusOK, "success", backpacks, "")
+	case "backpack/prop/use":
+		params := model.NewPropUse()
+		err = json.Unmarshal([]byte(m.Content), params)
+		if err != nil {
+			return  serializer.JsonByte(http.StatusInternalServerError, "数据解析失败", nil, "")
+		}
+
+		service.BackpackPropUse(params)
 	}
 
 	return serializer.JsonByte(http.StatusOK, "success", nil, "")

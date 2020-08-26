@@ -1,7 +1,11 @@
 package model
 
 import (
+	"encoding/json"
 	"giligili/constbase"
+	"github.com/jinzhu/gorm"
+	"log"
+	"reflect"
 	"time"
 )
 
@@ -20,21 +24,107 @@ type Backpack struct {
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at; type:datetime; not null; comment:'创建时间'"`
 }
 
+type PropUse struct {
+	PID int `json:"p_id" comment:"道具ID"`
+	ID int `json:"b_id" comment:"子弹ID"`
+}
+
+type PropUseResult struct {
+	PID int
+	EnhancerlResult string
+}
+
 func NewBackpack() *Backpack {
 	return &Backpack{
-		BID:        0,
-		UID:        0,
-		PID:        0,
-		PropDetail: nil,
-		Quantity:   0,
-		IsUse:      0,
 		UseAt:      time.Time{},
 		CreatedAt:  time.Time{},
 	}
 }
 
+func NewPropUse() *PropUse {
+	return &PropUse{}
+}
+
+func NewPropUseResult() *PropUseResult {
+	return &PropUseResult{}
+}
+
+func GetMyBackpackInfo(t string) *Backpack {
+	backpack := &Backpack{}
+
+	err := DB.Where("u_id = ? AND type = ? AND is_use = 0", UserInfo.UID, t).First(backpack).Error
+	if err != nil {
+		if err != gorm.ErrRecordNotFound {
+			log.Println(err.Error())
+		}
+		return nil
+	}
+
+	return backpack
+}
+
 func (backpack *Backpack) Use() bool {
 	if backpack.IsUse == constbase.YES {
-
+		return false
 	}
+
+	if backpack.PropDetail == nil {
+		backpack.PropDetail = GetPropInfo(backpack.PID)
+	}
+
+	backpack.IsUse = constbase.YES
+	backpack.UseAt = time.Time{}
+
+	err := DB.Save(backpack).Error
+	if err != nil {
+		log.Println(err.Error())
+		return false
+	}
+
+	return true
+}
+
+// 子弹强化器
+func (backpack *Backpack) UseBulletEnhancer(id int) bool {
+	index := -1
+	bullet := Bullet{}
+
+	for i, b := range(UserInfo.Plan.Detail.Bullets) {
+		if b.BID == id {
+			index = i
+			bullet = b
+			break
+		}
+	}
+
+	if bullet.BID == 0 {
+		return false
+	}
+
+	if index < 0 {
+		return false
+	}
+
+	b := GetEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Level)
+
+	if b == true {
+		// 强化成功
+		bullet.Level += 1
+		UserInfo.Plan.Detail.Bullets[index] = bullet
+
+		// 修改详情
+		s, err := json.Marshal(UserInfo.Plan.Detail)
+		if err != nil {
+			log.Println(err.Error())
+			return false
+		}
+
+		err = DB.Where("u_id = ?", UserInfo.UID).Save(UserInfo).Error
+		if err != nil {
+			log.Println(err.Error())
+			return false
+		}
+	}
+
+	return true
 }
