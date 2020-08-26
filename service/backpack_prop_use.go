@@ -19,7 +19,7 @@ func BackpackPropUse(params *model.PropUse) *model.PropUseResult {
 	}
 
 	// 获取背包的道具
-	backpack := model.GetMyBackpackInfo(prop.Type)
+	backpack := model.GetMyBackpackInfo(prop.PID)
 	if backpack == nil {
 		return result
 	}

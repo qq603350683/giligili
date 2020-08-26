@@ -1,11 +1,9 @@
 package model
 
 import (
-	"encoding/json"
 	"giligili/constbase"
 	"github.com/jinzhu/gorm"
 	"log"
-	"reflect"
 	"time"
 )
 
@@ -49,10 +47,10 @@ func NewPropUseResult() *PropUseResult {
 	return &PropUseResult{}
 }
 
-func GetMyBackpackInfo(t string) *Backpack {
+func GetMyBackpackInfo(p_id int) *Backpack {
 	backpack := &Backpack{}
 
-	err := DB.Where("u_id = ? AND type = ? AND is_use = 0", UserInfo.UID, t).First(backpack).Error
+	err := DB.Where("u_id = ? AND p_id = ? AND is_use = 0", UserInfo.UID, p_id).First(backpack).Error
 	if err != nil {
 		if err != gorm.ErrRecordNotFound {
 			log.Println(err.Error())
@@ -107,19 +105,21 @@ func (backpack *Backpack) UseBulletEnhancer(id int) bool {
 
 	b := GetEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Level)
 
+	log.Println(b)
+
 	if b == true {
 		// 强化成功
 		bullet.Level += 1
 		UserInfo.Plan.Detail.Bullets[index] = bullet
 
 		// 修改详情
-		s, err := json.Marshal(UserInfo.Plan.Detail)
-		if err != nil {
-			log.Println(err.Error())
-			return false
-		}
+		//s, err := json.Marshal(UserInfo.Plan.Detail)
+		//if err != nil {
+		//	log.Println(err.Error())
+		//	return false
+		//}
 
-		err = DB.Where("u_id = ?", UserInfo.UID).Save(UserInfo).Error
+		err := DB.Where("u_id = ?", UserInfo.UID).Save(UserInfo).Error
 		if err != nil {
 			log.Println(err.Error())
 			return false
