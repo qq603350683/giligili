@@ -39,6 +39,8 @@ func GetUserInfo(u_id int) *User {
 		return nil
 	}
 
+	user.Plan = GetUserPlanInfo(user.UpID)
+
 	return user
 }
 

@@ -3,10 +3,15 @@ package service
 import (
 	"giligili/constbase"
 	"giligili/model"
+	"log"
+	"time"
 )
 
 func BackpackPropUse(params *model.PropUse) *model.PropUseResult {
+	b := false
+
 	result := model.NewPropUseResult()
+	result.EnhancerlResult = constbase.ENHANCER_FAIL
 
 	if params.PID == 0 {
 		return result
@@ -26,13 +31,35 @@ func BackpackPropUse(params *model.PropUse) *model.PropUseResult {
 
 	backpack.PropDetail = prop
 
+	model.DB.Begin()
+
 	switch prop.Type {
 	case constbase.PROP_TYPE_BULLET_ENHANCER:
-		backpack.UseBulletEnhancer(params.ID)
+		b = backpack.UseBulletEnhancer(params.UpID, params.ID)
 	case constbase.PROP_TYPE_BULLET_SPEED_ENHANCER:
+		b = backpack.UseBulletSpeedEnhancer(params.UpID, params.ID)
 	case constbase.PROP_TYPE_SKILL_ENHANCER:
 	case constbase.PROP_TYPE_SKILL_SPEED_ENHANCER:
 	}
+
+	if b == false {
+		model.DB.Rollback()
+		return result
+	} else {
+		result.EnhancerlResult = constbase.ENHANCER_SUCCESS
+	}
+
+	backpack.IsUse = constbase.YES
+	backpack.UseAt = time.Now()
+
+	err := model.DB.Save(backpack).Error
+	if err != nil {
+		log.Println(err.Error())
+		model.DB.Rollback()
+		return result
+	}
+
+	model.DB.CommonDB()
 
 	return result
 }

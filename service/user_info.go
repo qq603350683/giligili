@@ -22,12 +22,7 @@ func GetUserInfo(u_id int) (*model.User, error) {
 	}
 
 	if user.UpID > 0 {
-		plan, err := GetUserPlanInfo(user.UpID)
-		if err != nil {
-			return nil, err
-		}
-
-		user.Plan = plan
+		user.Plan = GetUserPlanInfo(user.UpID)
 	}
 
 	return user, nil

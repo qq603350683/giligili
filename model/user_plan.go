@@ -1,12 +1,16 @@
 package model
 
-import "time"
+import (
+	"encoding/json"
+	"log"
+	"time"
+)
 
 type UserPlan struct {
 	UpID int `json:"up_id" gorm:"column:up_id; type:int(10) unsigned auto_increment; not null; primary_key"`
 	UID int `json:"u_id" gorm:"column:u_id; type:int(10) unsigned; not null; default:0; index:idx_u_id; comment:'用户ID 来自 users 表的 u_id'"`
 	DetailJson string `json:"-" gorm:"column:detail; type: text; not null; comment:'飞机详情json格式'"`
-	Detail *UserPlanDetail `json:"detail" comment:"飞机详情json格式"`
+	Detail *UserPlanDetail `json:"detail" gorm:"-" comment:"飞机详情json格式"`
 	DelAt time.Time `json:"-" gorm:"type:datetime;not null;default:'1000-01-01 00:00:00'; comment:'删除时间'"`
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at; type:datetime; not null; comment:'创建时间'"`
 }
@@ -45,4 +49,30 @@ type Skill struct {
 	Speed int `json:"speed" comment:"速度"`
 	MaxHeight int `json:"height" comment:"技能最长长度"`
 	Texture string `json:"texture" comment:"技能图片"`
+}
+
+func GetUserPlanInfo(up_id int) *UserPlan {
+	if up_id == 0 {
+		return nil
+	}
+
+	plan := &UserPlan{}
+
+	err := DB.Where("up_id = ?", up_id).First(plan).Error
+	if err != nil {
+		return nil
+	}
+
+	if IsDel(plan.DelAt) {
+		return nil
+	}
+
+	// 完善飞机信息
+	err = json.Unmarshal([]byte(plan.DetailJson), &plan.Detail)
+	if err != nil {
+		log.Printf("飞机信息 json 解析字段 detail 失败 up_id: %d, 失败详情: %s", up_id, err.Error())
+		return nil
+	}
+
+	return plan
 }

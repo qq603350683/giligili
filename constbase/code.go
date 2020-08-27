@@ -9,6 +9,9 @@ const (
 	PROP_TYPE_SKILL_ENHANCER = "skill_enhancer"
 	PROP_TYPE_SKILL_SPEED_ENHANCER = "skill_speed_enhancer"
 
+	ENHANCER_SUCCESS = "success"
+	ENHANCER_FAIL = "fail"
+
 	// 530 ~ 540 是 websocket 专用码
 	// 服务端要求客户端关闭连接
 	WEBSOCKET_CLOSE = 530
@@ -21,4 +24,6 @@ const (
 	WEBSOCKET_MESSAGE_TYPE_CLOSE = 8
 	WEBSOCKET_MESSAGE_TYPE_PING = 9
 	WEBSOCKET_MESSAGE_TYPE_PONG = 10
+
+	ENHANCER_RESULT = 230
 )

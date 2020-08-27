@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"giligili/constbase"
 	"giligili/model"
 	"giligili/serializer"
 	"giligili/service"
@@ -84,7 +85,9 @@ func Socket(msg []byte) []byte {
 			return  serializer.JsonByte(http.StatusInternalServerError, "数据解析失败", nil, "")
 		}
 
-		service.BackpackPropUse(params)
+		result := service.BackpackPropUse(params)
+
+		return  serializer.JsonByte(constbase.ENHANCER_RESULT, "success", result, "")
 	}
 
 	return serializer.JsonByte(http.StatusOK, "success", nil, "")

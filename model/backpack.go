@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"giligili/constbase"
 	"github.com/jinzhu/gorm"
 	"log"
@@ -24,12 +25,13 @@ type Backpack struct {
 
 type PropUse struct {
 	PID int `json:"p_id" comment:"道具ID"`
+	UpID int `json:"up_id" comment:"飞机ID"`
 	ID int `json:"b_id" comment:"子弹ID"`
 }
 
 type PropUseResult struct {
-	PID int
-	EnhancerlResult string
+	PID int `json:"p_id" comment:"道具ID"`
+	EnhancerlResult string `json:"enhancer_result" comment:"强化结果"`
 }
 
 func NewBackpack() *Backpack {
@@ -83,11 +85,77 @@ func (backpack *Backpack) Use() bool {
 }
 
 // 子弹强化器
-func (backpack *Backpack) UseBulletEnhancer(id int) bool {
+func (backpack *Backpack) UseBulletEnhancer(up_id int, id int) bool {
+	plan := GetUserPlanInfo(up_id)
+	if plan == nil {
+		return false
+	}
+
+	if plan.UID != UserInfo.UID {
+		return false
+	}
+
 	index := -1
 	bullet := Bullet{}
 
-	for i, b := range(UserInfo.Plan.Detail.Bullets) {
+	for i, b := range(plan.Detail.Bullets) {
+		if b.BID == id {
+			index = i
+			bullet = b
+			break
+		}
+	}
+
+	if bullet.BID == 0 {
+		log.Println("请选择需要强化的 bullet: b_id 不能为0")
+		return false
+	}
+
+	if index == -1 {
+		log.Println("请选择需要强化的 bullet: index 不能为 -1")
+		return false
+	}
+
+	b := GetBulletEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Level)
+
+	if b == true {
+		// 强化成功
+		bullet.Level += 1
+
+		plan.Detail.Bullets[index] = bullet
+
+		str, err := json.Marshal(plan.Detail)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		plan.DetailJson = string(str)
+
+		err = DB.Save(plan).Error
+		if err != nil {
+			log.Println(err.Error())
+			return false
+		}
+	}
+
+	return true
+}
+
+// 子弹速度强化器
+func (backpack *Backpack) UseBulletSpeedEnhancer(up_id int, id int) bool {
+	plan := GetUserPlanInfo(up_id)
+	if plan == nil {
+		return false
+	}
+
+	if plan.UID != UserInfo.UID {
+		return false
+	}
+
+	index := -1
+	bullet := Bullet{}
+
+	for i, b := range(plan.Detail.Bullets) {
 		if b.BID == id {
 			index = i
 			bullet = b
@@ -99,27 +167,26 @@ func (backpack *Backpack) UseBulletEnhancer(id int) bool {
 		return false
 	}
 
-	if index < 0 {
+	if index == -1 {
 		return false
 	}
 
-	b := GetEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Level)
-
-	log.Println(b)
+	b := GetSpeedEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Speed)
 
 	if b == true {
 		// 强化成功
-		bullet.Level += 1
-		UserInfo.Plan.Detail.Bullets[index] = bullet
+		bullet.Speed += 1
 
-		// 修改详情
-		//s, err := json.Marshal(UserInfo.Plan.Detail)
-		//if err != nil {
-		//	log.Println(err.Error())
-		//	return false
-		//}
+		plan.Detail.Bullets[index] = bullet
 
-		err := DB.Where("u_id = ?", UserInfo.UID).Save(UserInfo).Error
+		str, err := json.Marshal(plan.Detail)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		plan.DetailJson = string(str)
+
+		err = DB.Save(plan).Error
 		if err != nil {
 			log.Println(err.Error())
 			return false

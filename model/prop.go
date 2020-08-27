@@ -44,7 +44,7 @@ func GetPropInfo(p_id int) *Prop {
 	return prop
 }
 
-func GetEnhancerIsSuccess(t string, level int) bool {
+func GetBulletEnhancerIsSuccess(t string, level int) bool {
 	rand.Seed(time.Now().Unix())
 	i := rand.Intn(100)
 
@@ -104,6 +104,81 @@ func GetEnhancerIsSuccess(t string, level int) bool {
 		}
 	} else if level > 16 && level < 20 {
 		if i <= 3 {
+			return true
+		} else {
+			return false
+		}
+	} else {
+		return false
+	}
+}
+
+func GetSpeedEnhancerIsSuccess(t string, speed int) bool {
+	rand.Seed(time.Now().Unix())
+	i := rand.Intn(100)
+
+	if t == "" {
+		return false
+	}
+
+	if speed <= 5 {
+		return true
+	} else if speed > 5 && speed <= 10 {
+		if i <= 80 {
+			return true
+		} else {
+			return false
+		}
+	} else if speed > 10 && speed <= 15 {
+		if i <= 60 {
+			return true
+		} else {
+			return false
+		}
+	} else if speed > 15 && speed <= 20 {
+		if i <= 40 {
+			return true
+		} else {
+			return false
+		}
+	} else if speed > 20 && speed <= 23 {
+		if i <= 30 {
+			return true
+		} else {
+			return false
+		}
+	} else if speed == 24 {
+		if i <= 20 {
+			return true
+		} else {
+			return false
+		}
+	} else if speed == 25 {
+		if i <= 17 {
+			return true
+		} else {
+			return false
+		}
+	} else if speed == 26 {
+		if i <= 15 {
+			return true
+		} else {
+			return false
+		}
+	} else if speed == 27 {
+		if i <= 13 {
+			return true
+		} else {
+			return false
+		}
+	} else if speed == 28 {
+		if i <= 12 {
+			return true
+		} else {
+			return false
+		}
+	} else if speed == 29 {
+		if i <= 10 {
 			return true
 		} else {
 			return false
