@@ -45,7 +45,7 @@ func GetGrandTotalPrize(total int) *model.SignInPrize {
 
 	sign_in_prize.PorpDetail = model.GetPropInfo(sign_in_prize.PID)
 
-	model.DB.Begin()
+	db := model.DB.Begin()
 
 	b := false
 
@@ -60,7 +60,7 @@ func GetGrandTotalPrize(total int) *model.SignInPrize {
 	}
 
 	if b == false {
-		model.DB.Rollback()
+		db.Rollback()
 		return nil
 	}
 
@@ -73,11 +73,11 @@ func GetGrandTotalPrize(total int) *model.SignInPrize {
 
 	err = model.DB.Create(user_sign_in_prize).Error
 	if err != nil {
-		model.DB.Rollback()
+		db.Rollback()
 		return nil
 	}
 
-	model.DB.CommonDB()
+	db.Commit()
 
 	return sign_in_prize
 }

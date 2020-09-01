@@ -31,7 +31,7 @@ func BackpackPropUse(params *model.PropUse) *model.PropUseResult {
 
 	backpack.PropDetail = prop
 
-	model.DB.Begin()
+	db := model.DB.Begin()
 
 	switch prop.Type {
 	case constbase.PROP_TYPE_BULLET_ENHANCER:
@@ -43,7 +43,7 @@ func BackpackPropUse(params *model.PropUse) *model.PropUseResult {
 	}
 
 	if b == false {
-		model.DB.Rollback()
+		db.Rollback()
 		return result
 	} else {
 		result.EnhancerlResult = constbase.ENHANCER_SUCCESS
@@ -55,11 +55,11 @@ func BackpackPropUse(params *model.PropUse) *model.PropUseResult {
 	err := model.DB.Save(backpack).Error
 	if err != nil {
 		log.Println(err.Error())
-		model.DB.Rollback()
+		db.Rollback()
 		return result
 	}
 
-	model.DB.CommonDB()
+	db.Commit()
 
 	return result
 }

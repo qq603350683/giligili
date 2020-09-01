@@ -14,4 +14,5 @@ func migration() {
 	DB.AutoMigrate(&Prop{})
 	DB.AutoMigrate(&SignInPrize{})
 	DB.AutoMigrate(&UserSignInPrize{})
+	DB.AutoMigrate(&Store{})
 }

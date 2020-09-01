@@ -82,12 +82,30 @@ func Socket(msg []byte) []byte {
 		params := model.NewPropUse()
 		err = json.Unmarshal([]byte(m.Content), params)
 		if err != nil {
-			return  serializer.JsonByte(http.StatusInternalServerError, "数据解析失败", nil, "")
+			return serializer.JsonByte(http.StatusInternalServerError, "数据解析失败", nil, "")
 		}
 
 		result := service.BackpackPropUse(params)
 
 		return  serializer.JsonByte(constbase.ENHANCER_RESULT, "success", result, "")
+	case "store/list":
+		stores := service.GetStoreList()
+
+		return  serializer.JsonByte(http.StatusOK, "success", stores, "")
+	case "store/change":
+		params := service.NewStoreChange()
+
+		err = json.Unmarshal([]byte(m.Content), params)
+		if err != nil {
+			return serializer.JsonByte(http.StatusInternalServerError, "数据解析失败", nil, "")
+		}
+
+		b := service.StoreChange(params.SID)
+		if b == false {
+			return serializer.JsonByte(http.StatusInternalServerError, "兑换失败", nil, "")
+		}
+
+		return  serializer.JsonByte(http.StatusOK, "success", nil, "")
 	}
 
 	return serializer.JsonByte(http.StatusOK, "success", nil, "")
