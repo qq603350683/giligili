@@ -4,6 +4,8 @@ const (
 	YES = 1
 	NO = 0
 
+	PROP_TYPE_GOLD = "gold"
+	PROP_TYPE_DIAMOND = "diamond"
 	PROP_TYPE_BULLET_ENHANCER = "bullet_enhancer"
 	PROP_TYPE_BULLET_SPEED_ENHANCER = "bullet_speed_enhancer"
 	PROP_TYPE_SKILL_ENHANCER = "skill_enhancer"

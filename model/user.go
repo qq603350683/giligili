@@ -11,7 +11,7 @@ type User struct {
 	UID int `json:"u_id" gorm:"column:u_id;type:int(10) unsigned auto_increment;primary_key;"`
 	UpID int `json:"up_id" gorm:"column:up_id;type:int(10) unsigned; not null; default:0; comment:'飞机ID'"`
 	Gold int `json:"gold" gorm:"column:gold;type:int(10) unsigned; not null; default:0; comment:'金币'"`
-	Masonry int `json:"gold" gorm:"column:masonry;type:int(10) unsigned; not null; default:0; comment:'砖石'"`
+	Diamond int `json:"diamond" gorm:"column:diamond;type:int(10) unsigned; not null; default:0; comment:'砖石'"`
 	Plan *UserPlan `json:"plan" comment:"飞机详情"`
 	CreatedAt time.Time `json:"created_at" gorm:"type:datetime;not null; comment:'创建时间'"`
 	UpdatedAt time.Time `json:"-" gorm:"type:datetime;not null; comment:'更新时间'"`

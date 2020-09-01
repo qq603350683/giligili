@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"giligili/model"
+	"time"
 )
 
 // 获取用户在当月签到的次数
@@ -11,7 +12,7 @@ func GetSignInMonthCount(u_id int) (int, error) {
 		return 0, errors.New("用户ID不能为0")
 	}
 
-	month := "2020-08-01"
+	month := time.Now().Format("2006-01") + "-01"
 
 	count := 0
 

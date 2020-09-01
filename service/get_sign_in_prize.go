@@ -1,6 +1,7 @@
 package service
 
 import (
+	"giligili/constbase"
 	"giligili/model"
 	"github.com/jinzhu/gorm"
 	"log"
@@ -46,8 +47,18 @@ func GetGrandTotalPrize(total int) *model.SignInPrize {
 
 	model.DB.Begin()
 
+	b := false
+
 	// 添加到背包
-	b := sign_in_prize.PorpDetail.AddToBackpack()
+	switch sign_in_prize.PorpDetail.Type {
+	case constbase.PROP_TYPE_GOLD:
+		b = sign_in_prize.PorpDetail.AddToUserGold(sign_in_prize.Quantity)
+	case constbase.PROP_TYPE_DIAMOND:
+		b = sign_in_prize.PorpDetail.AddToUserDiamond(sign_in_prize.Quantity)
+	default:
+		b = sign_in_prize.PorpDetail.AddToBackpack()
+	}
+
 	if b == false {
 		model.DB.Rollback()
 		return nil

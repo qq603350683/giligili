@@ -9,7 +9,7 @@ import (
 
 type Prop struct {
 	PID int `json:"p_id" gorm:"column:p_id;type:int(10) unsigned auto_increment;not null;primary_key;comment:'道具ID'"`
-	Type string `json:"type" gorm:"column:type;type:enum('bullet_enhancer','bullet_speed_enhancer', 'skill_enhancer', 'skill_speed_enhancer');not null;comment:'道具分类'"`
+	Type string `json:"type" gorm:"column:type;type:enum('gold','diamond','bullet_enhancer','bullet_speed_enhancer','skill_enhancer','skill_speed_enhancer');not null;comment:'道具分类'"`
 	Image string `json:"image" gorm:"column:image;type:char(35);default:'';not null;comment:'图标'"`
 	Title string `json:"title" gorm:"column:title;type:varchar(50);default:'';not null;comment:'标题'"`
 	Remark string `json:"-" gorm:"column:remark;type:varchar(50);default:'';not null;comment:'备注说明、领取途径等'"`
@@ -198,6 +198,38 @@ func (prop *Prop) AddToBackpack() bool {
 	err := DB.Create(backpack).Error
 	if err != nil {
 		log.Printf("用户ID(%d)道具领取失败", UserInfo.UID)
+		return false
+	}
+
+	return true
+}
+
+// 增加金币金额
+func (prop *Prop) AddToUserGold(quantity int) bool {
+	user := GetUserInfo(UserInfo.UID)
+	if user == nil {
+		return false
+	}
+
+	res := DB.Model(user).Where("gold = ?", user.Gold).Update("gold", user.Gold + quantity)
+	if res.RowsAffected == 0 {
+		log.Println("更新数据失败")
+		return false
+	}
+
+	return true
+}
+
+// 增加钻石
+func (prop *Prop) AddToUserDiamond(quantity int) bool {
+	user := GetUserInfo(UserInfo.UID)
+	if user == nil {
+		return false
+	}
+
+	res := DB.Model(user).Where("diamond = ?", user.Diamond).Update("diamond", user.Diamond + quantity)
+	if res.RowsAffected == 0 {
+		log.Println("更新数据失败")
 		return false
 	}
 
