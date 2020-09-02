@@ -4,6 +4,7 @@ import (
 	"giligili/cache"
 	"giligili/model"
 	"giligili/socket"
+	"giligili/tasks"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -26,6 +27,8 @@ func main() {
 
 	// 初始化数据库连接池
 	cache.Init()
+
+	go tasks.SendFakeMessage()
 
 	socket.Run()
 }

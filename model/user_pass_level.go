@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"log"
+	"time"
+)
 
 // 闯关记录
 type UserPassLevel struct {
@@ -17,6 +20,7 @@ func NewUserPassLevel() *UserPassLevel {
 	return &UserPassLevel{}
 }
 
+// 顺利通关
 func (user *User) PassLevel(l_id int, is_success int8, gold int, diamond int) bool {
 	user_pass_level := NewUserPassLevel()
 
@@ -26,7 +30,11 @@ func (user *User) PassLevel(l_id int, is_success int8, gold int, diamond int) bo
 	user_pass_level.Gold = gold
 	user_pass_level.Diamond = diamond
 
-
+	err := DB.Create(user_pass_level).Error
+	if err != nil {
+		log.Println(err.Error())
+		return false
+	}
 
 	return true
 }

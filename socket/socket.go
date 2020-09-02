@@ -13,8 +13,8 @@ import (
 )
 
 type WebsocketPool struct {
-	num chan int
-	connects map[int]*websocket.Conn
+	Num chan int
+	Connects map[int]*websocket.Conn
 }
 
 var upgrade = websocket.Upgrader{
@@ -28,8 +28,8 @@ var WebsocketConns *WebsocketPool
 
 func NewWebsocketPool() *WebsocketPool {
 	pool := &WebsocketPool{
-		num: make(chan int, 1),
-		connects: make(map[int]*websocket.Conn),
+		Num: make(chan int, 1),
+		Connects: make(map[int]*websocket.Conn),
 	}
 
 	return pool
@@ -37,7 +37,7 @@ func NewWebsocketPool() *WebsocketPool {
 
 // 发送消息
 func SendMessage(u_id int, message []byte) {
-	if conn, ok := WebsocketConns.connects[u_id]; ok {
+	if conn, ok := WebsocketConns.Connects[u_id]; ok {
 		conn.WriteMessage(constbase.WEBSOCKET_MESSAGE_TYPE_TEXT, message)
 	}
 }
@@ -82,20 +82,20 @@ func Run() {
 			log.Printf("登录成功: %d", u_id)
 
 			// 查看是否重复登录， 重复登录就退出
-			if c, ok := WebsocketConns.connects[u_id]; ok {
+			if c, ok := WebsocketConns.Connects[u_id]; ok {
 				log.Printf("账户登陆被强制下线: %d", u_id)
 				msg = serializer.JsonByte(constbase.WEBSOCKET_OFFLINE, "您已被强制下线", nil, "")
 				c.WriteMessage(constbase.WEBSOCKET_MESSAGE_TYPE_TEXT, msg)
 
-				// 睡眠0.5秒确保消息客户端收到断开消息后断开链接再覆盖 WebsocketConns.connects
+				// 睡眠0.5秒确保消息客户端收到断开消息后断开链接再覆盖 WebsocketConns.Connects
 				time.Sleep(time.Second / 2)
 				c.Close()
 				time.Sleep(time.Second / 2)
 			} else {
-				WebsocketConns.num <- 1
+				WebsocketConns.Num <- 1
 			}
 
-			WebsocketConns.connects[u_id] = conn
+			WebsocketConns.Connects[u_id] = conn
 
 			user := model.GetUserInfo(u_id)
 
@@ -105,15 +105,15 @@ func Run() {
 				mtype, content, err := conn.ReadMessage()
 				if err != nil {
 					log.Printf("关闭链接: %d, 错误信息: %s", u_id, err.Error())
-					delete(WebsocketConns.connects, u_id)
+					delete(WebsocketConns.Connects, u_id)
 					conn.Close()
 
-					if _, ok := <- WebsocketConns.num; !ok {
-						log.Printf("WebsocketConns.num - 1 fail")
+					if _, ok := <- WebsocketConns.Num; !ok {
+						log.Printf("WebsocketConns.Num - 1 fail")
 						return
 					}
 
-					log.Printf("当前在线人数为: %d", len(WebsocketConns.num))
+					log.Printf("当前在线人数为: %d", len(WebsocketConns.Num))
 
 					return
 				}
