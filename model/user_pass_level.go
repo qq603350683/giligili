@@ -13,9 +13,22 @@ type UserPassLevel struct {
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at; type:datetime; not null; comment:'创建时间'"`
 }
 
+func NewUserPassLevel() *UserPassLevel {
+	return &UserPassLevel{}
+}
 
-func (user *User) PassLevel(l_id int, is_success int8) bool {
+func (user *User) PassLevel(l_id int, is_success int8, gold int, diamond int) bool {
+	user_pass_level := NewUserPassLevel()
 
+	user_pass_level.UID = UserInfo.UID
+	user_pass_level.LID = l_id
+	user_pass_level.IsSucess = is_success
+	user_pass_level.Gold = gold
+	user_pass_level.Diamond = diamond
+
+
+
+	return true
 }
 
 
