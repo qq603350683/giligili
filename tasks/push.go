@@ -1,15 +1,23 @@
 package tasks
 
 import (
+	"giligili/constbase"
+	"giligili/serializer"
 	"giligili/socket"
+	"giligili/util"
 	"log"
 	"math/rand"
 	"time"
 )
 
+type FakeMessage struct {
+	Content string `json:"content"`
+	CreatedAt string `json:"created_at"`
+}
+
 func Stop() {
 	rand.Seed(time.Now().Unix())
-	i := rand.Intn(3) + 1
+	i := rand.Intn(20) + 1
 	time.Sleep(time.Second * time.Duration(i))
 }
 
@@ -27,9 +35,7 @@ func SendFakeMessage() {
 	for {
 		if _, ok := <- c; ok {
 			rand.Seed(time.Now().Unix())
-			i := rand.Intn(100)
-
-			log.Println(i)
+			i := rand.Intn(25)
 
 			if i > 20 || len(socket.WebsocketConns.Num) == 0 {
 				Stop()
@@ -43,9 +49,20 @@ func SendFakeMessage() {
 
 			nickname := nicknames[i]
 
-			msg := nickname + " is on line"
+			content := nickname + " is on line"
 
-			log.Println(msg)
+			fake_message := FakeMessage{
+				Content:   content,
+				CreatedAt: time.Now().Format(util.DATETIME),
+			}
+
+			res := serializer.JsonByte(constbase.CHAT_MESSAGE, "success", fake_message, "")
+
+			for _, conn := range(socket.WebsocketConns.Connects) {
+
+				conn.WriteMessage(constbase.WEBSOCKET_MESSAGE_TYPE_TEXT, res)
+			}
+			//log.Println(msg)
 
 			Stop()
 

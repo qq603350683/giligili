@@ -29,9 +29,20 @@ func Socket(msg []byte) []byte {
 	case "level/get":
 		level_get := model.NewLevelGet()
 		err = json.Unmarshal([]byte(m.Content), level_get)
-		l, _ := model.GetLevelByID(level_get.LID)
+		l := model.GetLevelInfo(level_get.LID)
 
 		return serializer.JsonByte(http.StatusOK, "success", l, "")
+	case "level/pass":
+		params := service.NewLevelPassParams()
+		err = json.Unmarshal([]byte(m.Content), params)
+		if err != nil {
+			log.Printf("json 错误: %s", m.Content)
+			return serializer.JsonByte(http.StatusInternalServerError, "参数错误", nil, "")
+		}
+
+		user_pass_level := service.UserPassLevelCreate(params.LID, params.IsSuccess)
+
+		return serializer.JsonByte(constbase.LEVEL_PASS_PRIZE, "success", user_pass_level, "")
 	case "user":
 		// 我的详情
 		user, err := service.GetUserInfo(model.UserInfo.UID)

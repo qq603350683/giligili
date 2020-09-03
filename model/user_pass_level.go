@@ -20,8 +20,8 @@ func NewUserPassLevel() *UserPassLevel {
 	return &UserPassLevel{}
 }
 
-// 顺利通关
-func (user *User) PassLevel(l_id int, is_success int8, gold int, diamond int) bool {
+// 通关记录
+func (user *User) PassLevel(l_id int, is_success int8, gold int, diamond int) *UserPassLevel {
 	user_pass_level := NewUserPassLevel()
 
 	user_pass_level.UID = UserInfo.UID
@@ -33,10 +33,10 @@ func (user *User) PassLevel(l_id int, is_success int8, gold int, diamond int) bo
 	err := DB.Create(user_pass_level).Error
 	if err != nil {
 		log.Println(err.Error())
-		return false
+		return nil
 	}
 
-	return true
+	return user_pass_level
 }
 
 

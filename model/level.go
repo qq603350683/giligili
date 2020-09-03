@@ -32,26 +32,26 @@ func NewLevelGet() *LevelGet {
 	return level_get
 }
 
-func GetLevelByID(l_id int) (*Level, error) {
+func GetLevelInfo(l_id int) *Level {
 	level := NewLevel()
 
 	if l_id == 0 {
-		return level, nil
+		return nil
 	}
 
-	err := DB.Where("l_id = ?", l_id, ).First(level).Error
+	err := DB.Where("l_id = ?", l_id,).First(level).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return level, err
+			return nil
 		}
-		return level, err
+		return nil
 	}
 
 	if IsDel(level.DelAt) {
-		return level, nil
+		return nil
 	}
 
-	return level, nil
+	return nil
 }
 
 func GetLevelList() (*[]Level, error) {

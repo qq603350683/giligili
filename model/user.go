@@ -69,6 +69,7 @@ func (user *User) TodayIsForward() bool {
 	return false
 }
 
+// 转发
 func (user *User) TodayForward() bool {
 	key := cache.UserTodayForwardListKey()
 
@@ -86,6 +87,26 @@ func (user *User) TodayForward() bool {
 
 	if i != 1 {
 		log.Printf("Redis: i 的值非 1")
+		return false
+	}
+
+	return true
+}
+
+// 金币和钻石都增加
+func (user *User) GoldAndDiamondIncr(gold, diamond int) bool {
+	if gold + diamond == 0 {
+		return false
+	}
+
+	u := GetUserInfo(UserInfo.UID)
+
+	res := DB.Model(u).Where("gold = ? AND diamond = ?", u.Gold, u.Diamond).Update(map[string]int{
+		"gold": u.Gold + gold,
+		"diamind": u.Diamond + diamond,
+	})
+
+	if res.RowsAffected == 0 {
 		return false
 	}
 
