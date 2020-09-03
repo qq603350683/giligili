@@ -3,6 +3,7 @@ package main
 import (
 	"giligili/cache"
 	"giligili/model"
+	"giligili/seeder"
 	"giligili/socket"
 	"giligili/tasks"
 	"github.com/joho/godotenv"
@@ -29,6 +30,8 @@ func main() {
 	cache.Init()
 
 	go tasks.SendFakeMessage()
+
+	seeder.Run()
 
 	socket.Run()
 }
