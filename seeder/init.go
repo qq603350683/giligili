@@ -35,7 +35,7 @@ func Run() {
 		Level:      1,
 		Title:      "第一关",
 		Background: "bg/bg0.jpg",
-		Virus:      `[
+		VirusJson: `[
 {"time": 10, "hp": 5, "speed": 1, "x": 100, "y": 0, "w": 150, "h": 150, "texture": "virus/virus.png"}, 
 {"time": 60, "hp": 6, "speed": 1, "x": 200, "y": 0, "w": 150, "h": 150, "texture": "virus/virus.png"},
 {"time": 120, "hp": 10, "speed": 1, "x": 300, "y": 0, "w": 150, "h": 150, "texture": "virus/virus.png"},
@@ -50,7 +50,7 @@ func Run() {
 		Level:      2,
 		Title:      "第二关",
 		Background: "bg/bg1.jpg",
-		Virus:      `[
+		VirusJson: `[
 {"time": 10, "hp": 7, "speed": 1, "x": 100, "y": 0, "w": 150, "h": 150, "texture": "virus/virus.png"}, 
 {"time": 60, "hp": 8, "speed": 1, "x": 200, "y": 0, "w": 150, "h": 150, "texture": "virus/virus.png"},
 {"time": 120, "hp": 11, "speed": 1, "x": 300, "y": 0, "w": 150, "h": 150, "texture": "virus/virus.png"},

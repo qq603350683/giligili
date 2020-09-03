@@ -1,7 +1,9 @@
 package model
 
 import (
+	"encoding/json"
 	"github.com/jinzhu/gorm"
+	"log"
 	"time"
 )
 
@@ -10,9 +12,22 @@ type Level struct {
 	Level int `json:"level" gorm:"column:level; type: int(10) unsigned; not null; default:0; comment:'关卡'"`
 	Title string `json:"title" gorm:"column:title; type: char(10); not null; default:''; comment:'标题'"`
 	Background string `json:"background" gorm:"column:background; type: text; not null; comment:'背景详情 image - 背景图 speed - 速度'"`
-	Virus string `json:"virus" gorm:"column:detail; type: text; not null; comment:'病毒位置'"`
-	CreatedAt time.Time `json:"created_at" gorm:"column:created_at; type:datetime; not null; comment:'创建时间'"`
+	VirusJson string `json:"-" gorm:"column:detail; type: text; not null; comment:'病毒位置'"`
+	Virus []Virus `json:"virus" gorm:"-"`
+	CreatedAt time.Time `json:"-" gorm:"column:created_at; type:datetime; not null; comment:'创建时间'"`
 	DelAt time.Time `json:"-" gorm:"type:datetime;not null;default:'1000-01-01 00:00:00'; comment:'删除时间'"`
+}
+
+// 病毒
+type Virus struct {
+	Time int `json:"time" comment:"病毒出现时间"`
+	HP int `json:"hp" comment:"病毒HP"`
+	Speed int `json:"speed" comment:"病毒移动速度"`
+	X int `json:"x" comment:"病毒出现的X位置"`
+	Y int `json:"x" comment:"病毒出现的Y位置"`
+	Width int `json:"w" comment:"病毒宽度"`
+	Height int `json:"h" comment:"高度"`
+	Texture string `json:"texture" comment:"背景图"`
 }
 
 // 传递参数解析
@@ -51,7 +66,15 @@ func GetLevelInfo(l_id int) *Level {
 		return nil
 	}
 
-	return nil
+	if level.VirusJson != "" {
+		err = json.Unmarshal([]byte(level.VirusJson), &level.Virus)
+		if err != nil {
+			log.Printf("Level.VirusJson json 解析失败 l_id: %d, 失败详情: %s", l_id, err.Error())
+			return nil
+		}
+	}
+
+	return level
 }
 
 func GetLevelList() (*[]Level, error) {

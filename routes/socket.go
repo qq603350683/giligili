@@ -29,9 +29,9 @@ func Socket(msg []byte) []byte {
 	case "level/get":
 		level_get := model.NewLevelGet()
 		err = json.Unmarshal([]byte(m.Content), level_get)
-		l := model.GetLevelInfo(level_get.LID)
+		level := model.GetLevelInfo(level_get.LID)
 
-		return serializer.JsonByte(http.StatusOK, "success", l, "")
+		return serializer.JsonByte(constbase.LEVEL_INFO, "success", level, "")
 	case "level/pass":
 		params := service.NewLevelPassParams()
 		err = json.Unmarshal([]byte(m.Content), params)
@@ -45,12 +45,12 @@ func Socket(msg []byte) []byte {
 		return serializer.JsonByte(constbase.LEVEL_PASS_PRIZE, "success", user_pass_level, "")
 	case "user":
 		// 我的详情
-		user, err := service.GetUserInfo(model.UserInfo.UID)
-		if err != nil {
-			return serializer.JsonByte(http.StatusInternalServerError, err.Error(), nil, err.Error())
+		user := service.GetUserInfo(model.UserInfo.UID)
+		if user == nil {
+			return serializer.JsonByte(http.StatusInternalServerError, "用户信息不存在", nil, "")
 		}
 
-		return  serializer.JsonByte(http.StatusOK, "success", user, "")
+		return  serializer.JsonByte(constbase.LOGIN_USER_INFO, "success", user, "")
 	case "sign_in/create":
 		// 今天签到
 		bool, err := service.CreateSignIn(model.UserInfo.UID)

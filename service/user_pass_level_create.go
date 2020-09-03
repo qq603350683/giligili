@@ -3,6 +3,7 @@ package service
 import (
 	"giligili/constbase"
 	"giligili/model"
+	"log"
 )
 
 type LevelPassParams struct {
@@ -36,6 +37,9 @@ func UserPassLevelCreate(l_id int, is_success int8) *model.UserPassLevel {
 			db.Rollback()
 			return nil
 		}
+		log.Printf("玩家（%d）通关关卡（%d）成功", model.UserInfo.UID, l_id)
+	} else {
+		log.Printf("玩家（%d）通关关卡（%d）失败", model.UserInfo.UID, l_id)
 	}
 
 	user_pass_level := model.UserInfo.PassLevel(l_id, is_success, gold, diamond)

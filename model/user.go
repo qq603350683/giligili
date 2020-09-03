@@ -103,7 +103,7 @@ func (user *User) GoldAndDiamondIncr(gold, diamond int) bool {
 
 	res := DB.Model(u).Where("gold = ? AND diamond = ?", u.Gold, u.Diamond).Update(map[string]int{
 		"gold": u.Gold + gold,
-		"diamind": u.Diamond + diamond,
+		"diamond": u.Diamond + diamond,
 	})
 
 	if res.RowsAffected == 0 {
