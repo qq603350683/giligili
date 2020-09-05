@@ -35,6 +35,9 @@ const (
 	LEVEL_PASS_PRIZE = 231
 	// 关卡详情
 	LEVEL_INFO = 232
+	// 签到成功
+	SIGN_IN_SUCCESS = 234
+	SIGN_IN_FAIL = 235
 
 	CHAT_MESSAGE = 250
 )

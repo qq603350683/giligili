@@ -55,10 +55,10 @@ func Socket(msg []byte) []byte {
 		// 今天签到
 		bool, err := service.CreateSignIn(model.UserInfo.UID)
 		if bool == false {
-			return serializer.JsonByte(http.StatusInternalServerError, err.Error(), nil, err.Error())
+			return serializer.JsonByte(constbase.SIGN_IN_FAIL, err.Error(), nil, err.Error())
 		}
 
-		return  serializer.JsonByte(http.StatusOK, "success", nil, "")
+		return  serializer.JsonByte(constbase.SIGN_IN_SUCCESS, "success", nil, "")
 	case "sign_in/prize":
 		// 签到奖励
 		count, err := service.GetSignInMonthCount(model.UserInfo.UID)
