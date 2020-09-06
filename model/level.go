@@ -24,7 +24,7 @@ type Virus struct {
 	HP int `json:"hp" comment:"病毒HP"`
 	Speed int `json:"speed" comment:"病毒移动速度"`
 	X int `json:"x" comment:"病毒出现的X位置"`
-	Y int `json:"x" comment:"病毒出现的Y位置"`
+	Y int `json:"y" comment:"病毒出现的Y位置"`
 	Width int `json:"w" comment:"病毒宽度"`
 	Height int `json:"h" comment:"高度"`
 	Texture string `json:"texture" comment:"背景图"`
