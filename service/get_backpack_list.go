@@ -5,24 +5,40 @@ import (
 	"log"
 )
 
-func GetBackpackList(u_id int) []model.Backpack {
+type BackpackList struct {
+	plans     []model.UserPlan `json:"plans"`
+	backpacks []model.Backpack `json:"backpacks"`
+}
+
+func GetBackpackList(u_id int) BackpackList {
+	plans     := []model.UserPlan{}
 	backpacks := []model.Backpack{}
+
+	backpack_list := BackpackList{
+		plans:     nil,
+		backpacks: nil,
+	}
 
 	err := model.DB.Raw("SELECT *, COUNT(*) as quantity FROM backpacks WHERE u_id = ? AND is_use = 0 GROUP BY p_id", u_id).Find(&backpacks).Error
 	if err != nil {
 		log.Println(err.Error())
-		return nil
+		return backpack_list
 	}
 
-	if len(backpacks) == 0 {
-		return nil
+	if len(backpacks) > 0 {
+		for index, backpack := range(backpacks) {
+			backpack.PropDetail = model.GetPropInfo(backpack.PID)
+
+			backpacks[index] = backpack
+		}
+
+		backpack_list.backpacks = backpacks
 	}
 
-	for index, backpack := range(backpacks) {
-		backpack.PropDetail = model.GetPropInfo(backpack.PID)
+	plans = model.GetUserPlans(model.UserInfo.UID)
+	backpack_list.plans = plans
 
-		backpacks[index] = backpack
-	}
+	log.Println(backpack_list)
 
-	return backpacks
+	return backpack_list
 }

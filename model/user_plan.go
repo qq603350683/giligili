@@ -41,3 +41,34 @@ func GetUserPlanInfo(up_id int) *UserPlan {
 
 	return plan
 }
+
+
+func GetUserPlans(u_id int) []UserPlan {
+	if u_id == 0 {
+		return nil
+	}
+
+	plans := []UserPlan{}
+
+	err := DB.Where("u_id = ? AND del_at = ?", u_id, DelAtDefaultTime).Find(&plans).Error
+	if err != nil {
+		log.Println(err.Error())
+		return nil
+	}
+
+	if len(plans) == 0 {
+		return nil
+	}
+
+	for index, plan := range(plans) {
+		err = json.Unmarshal([]byte(plan.DetailJson), &plan.Detail)
+		if err != nil {
+			log.Printf("飞机信息 json 解析字段 detail 失败 up_id: %d, 失败详情: %s", plan.UpID, err.Error())
+			return nil
+		}
+
+		plans[index] = plan
+	}
+
+	return plans
+}
