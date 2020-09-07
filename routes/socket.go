@@ -25,6 +25,9 @@ func Socket(msg []byte) []byte {
 		return serializer.JsonByte(http.StatusOK, "数据解析错误", nil, err.Error())
 	}
 
+	// 更新model.UserInfo信息
+	model.UserInfo = model.GetUserInfo(model.UserInfo.UID)
+
 	switch m.Case {
 	case "level/get":
 		level_get := model.NewLevelGet()
@@ -51,6 +54,20 @@ func Socket(msg []byte) []byte {
 		}
 
 		return  serializer.JsonByte(constbase.LOGIN_USER_INFO, "success", user, "")
+	case "user/plan/change":
+		params := service.NewUserPlanChangeParams()
+		err = json.Unmarshal([]byte(m.Content), params)
+		if err != nil {
+			log.Printf("json 错误: %s", m.Content)
+			return serializer.JsonByte(http.StatusInternalServerError, "参数错误", nil, "")
+		}
+
+		bool := service.UserPlanChange(params.UpID)
+		if bool == false {
+			return serializer.JsonByte(constbase.USER_PLAN_CHANGE_FAIL, "更换失败", nil, "")
+		}
+
+		return serializer.JsonByte(constbase.USER_PLAN_CHANGE_SUCCESS, "更换成功", nil, "")
 	case "sign_in/create":
 		// 今天签到
 		bool, err := service.CreateSignIn(model.UserInfo.UID)

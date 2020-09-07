@@ -1,6 +1,8 @@
 package model
 
 import (
+	"errors"
+	"giligili/util"
 	"log"
 	"time"
 )
@@ -21,22 +23,19 @@ func NewUserPassLevel() *UserPassLevel {
 }
 
 // 通关记录
-func (user *User) PassLevel(l_id int, is_success int8, gold int, diamond int) *UserPassLevel {
-	user_pass_level := NewUserPassLevel()
+func CountTodayPass(u_id, l_id int) (int, error) {
+	count := 0
+	user_pass_levels := []UserPassLevel{}
 
-	user_pass_level.UID = UserInfo.UID
-	user_pass_level.LID = l_id
-	user_pass_level.IsSucess = is_success
-	user_pass_level.Gold = gold
-	user_pass_level.Diamond = diamond
+	created_at := time.Now().Format(util.DATE)
 
-	err := DB.Create(user_pass_level).Error
+	err := DB.Where("u_id = ? AND is_success = ? AND created_at >= ?", u_id, l_id, created_at).Find(&user_pass_levels).Count(&count).Error
 	if err != nil {
 		log.Println(err.Error())
-		return nil
+		return 0, errors.New("数据异常")
 	}
 
-	return user_pass_level
+	return count, nil
 }
 
 

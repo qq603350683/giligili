@@ -2,6 +2,7 @@ package model
 
 import (
 	"giligili/cache"
+	"giligili/constbase"
 	"github.com/jinzhu/gorm"
 	"log"
 	"time"
@@ -12,6 +13,7 @@ type User struct {
 	UpID int `json:"up_id" gorm:"column:up_id;type:int(10) unsigned; not null; default:0; comment:'飞机ID'"`
 	Gold int `json:"gold" gorm:"column:gold;type:int(10) unsigned; not null; default:0; comment:'金币'"`
 	Diamond int `json:"diamond" gorm:"column:diamond;type:int(10) unsigned; not null; default:0; comment:'钻石'"`
+	LID int `json:"l_id" gorm:"column:l_id;type:int(10) unsigned; not null; default:0; comment:'最高通关级别'"`
 	Plan *UserPlan `json:"plan" comment:"飞机详情"`
 	CreatedAt time.Time `json:"created_at" gorm:"type:datetime;not null; comment:'创建时间'"`
 	UpdatedAt time.Time `json:"-" gorm:"type:datetime;not null; comment:'更新时间'"`
@@ -99,13 +101,81 @@ func (user *User) GoldAndDiamondIncr(gold, diamond int) bool {
 		return false
 	}
 
-	u := GetUserInfo(UserInfo.UID)
-
-	res := DB.Model(u).Where("gold = ? AND diamond = ?", u.Gold, u.Diamond).Update(map[string]int{
-		"gold": u.Gold + gold,
-		"diamond": u.Diamond + diamond,
+	res := DB.Model(UserInfo).Where("gold = ? AND diamond = ?", UserInfo.Gold, UserInfo.Diamond).Update(map[string]int{
+		"gold": UserInfo.Gold + gold,
+		"diamond": UserInfo.Diamond + diamond,
 	})
 
+	if res.RowsAffected == 0 {
+		return false
+	}
+
+	return true
+}
+
+// 领取通关奖励
+func (user *User) GetPassLevelPrize(l_id, gold, diamond int) bool {
+	if UserInfo.LID <= l_id && gold + diamond == 0 {
+		return false
+	}
+
+	new_l_id := UserInfo.LID
+
+	if (l_id > UserInfo.LID) {
+		new_l_id = l_id
+	}
+
+	res := DB.Model(UserInfo).Where("gold = ? AND diamond = ? AND l_id = ?", UserInfo.Gold, UserInfo.Diamond, UserInfo.LID).Update(map[string]int{
+		"l_id": new_l_id,
+		"gold": UserInfo.Gold + gold,
+		"diamond": UserInfo.Diamond + diamond,
+	})
+
+	if res.RowsAffected == 0 {
+		return false
+	}
+
+	return true
+}
+
+// 更换飞机
+func (user *User) ChangePlan(up_id int) bool {
+	if UserInfo.UpID == up_id {
+		return true
+	}
+
+	log.Println(UserInfo.UpID)
+	log.Println(up_id)
+
+	current_user_plan := GetUserPlanInfo(UserInfo.UpID)
+	if current_user_plan == nil {
+		return false
+	}
+
+	if current_user_plan.UID != UserInfo.UID {
+		return false
+	}
+
+	user_plan := GetUserPlanInfo(up_id)
+	if user_plan == nil {
+		return false
+	}
+
+	if user_plan.UID != UserInfo.UID {
+		return false
+	}
+
+	res := DB.Model(user_plan).Update("is_put_on", constbase.YES)
+	if res.RowsAffected == 0 {
+		return false
+	}
+
+	res = DB.Model(current_user_plan).Update("is_put_on", constbase.NO)
+	if res.RowsAffected == 0 {
+		return false
+	}
+
+	res = DB.Model(UserInfo).Update("up_id", up_id)
 	if res.RowsAffected == 0 {
 		return false
 	}

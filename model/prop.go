@@ -206,12 +206,7 @@ func (prop *Prop) AddToBackpack() bool {
 
 // 增加金币金额
 func (prop *Prop) AddToUserGold(quantity int) bool {
-	user := GetUserInfo(UserInfo.UID)
-	if user == nil {
-		return false
-	}
-
-	res := DB.Model(user).Where("gold = ?", user.Gold).Update("gold", user.Gold + quantity)
+	res := DB.Model(UserInfo).Where("gold = ?", UserInfo.Gold).Update("gold", UserInfo.Gold + quantity)
 	if res.RowsAffected == 0 {
 		log.Println("更新数据失败")
 		return false
@@ -222,12 +217,7 @@ func (prop *Prop) AddToUserGold(quantity int) bool {
 
 // 增加钻石
 func (prop *Prop) AddToUserDiamond(quantity int) bool {
-	user := GetUserInfo(UserInfo.UID)
-	if user == nil {
-		return false
-	}
-
-	res := DB.Model(user).Where("diamond = ?", user.Diamond).Update("diamond", user.Diamond + quantity)
+	res := DB.Model(UserInfo).Where("diamond = ?", UserInfo.Diamond).Update("diamond", UserInfo.Diamond + quantity)
 	if res.RowsAffected == 0 {
 		log.Println("更新数据失败")
 		return false

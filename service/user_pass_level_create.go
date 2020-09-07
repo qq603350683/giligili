@@ -29,20 +29,41 @@ func UserPassLevelCreate(l_id int, is_success int8) *model.UserPassLevel {
 	db := model.DB.Begin()
 
 	if is_success == constbase.YES {
-		gold = 100
-		diamond = 5
-
-		b = model.UserInfo.GoldAndDiamondIncr(gold, diamond)
-		if b == false {
-			db.Rollback()
+		count, err := model.CountTodayPass(model.UserInfo.UID, l_id)
+		if err != nil {
 			return nil
 		}
+
+		if count < 5 {
+			gold = 100
+			diamond = 1
+
+			b = model.UserInfo.GetPassLevelPrize(l_id, gold, diamond)
+			if b == false {
+				db.Rollback()
+				return nil
+			}
+		}
+
 		log.Printf("玩家（%d）通关关卡（%d）成功", model.UserInfo.UID, l_id)
 	} else {
 		log.Printf("玩家（%d）通关关卡（%d）失败", model.UserInfo.UID, l_id)
 	}
 
-	user_pass_level := model.UserInfo.PassLevel(l_id, is_success, gold, diamond)
+	user_pass_level := model.NewUserPassLevel()
+
+	user_pass_level.UID = model.UserInfo.UID
+	user_pass_level.LID = l_id
+	user_pass_level.IsSucess = is_success
+	user_pass_level.Gold = gold
+	user_pass_level.Diamond = diamond
+
+	err := model.DB.Create(user_pass_level).Error
+	if err != nil {
+		log.Println(err.Error())
+		return nil
+	}
+
 	if user_pass_level == nil {
 		db.Rollback()
 		return nil
