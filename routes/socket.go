@@ -104,7 +104,7 @@ func Socket(msg []byte) []byte {
 		return  serializer.JsonByte(http.StatusOK, "success", prop, "")
 	case "backpack/list":
 		backpacks := service.GetBackpackList(model.UserInfo.UID)
-		//log.Println(backpacks)
+
 		return serializer.JsonByte(http.StatusOK, "success", backpacks, "")
 	case "backpack/prop/use":
 		params := model.NewPropUse()
