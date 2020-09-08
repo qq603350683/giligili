@@ -4,4 +4,5 @@ package seeder
 func Run() {
 	LevelRun()
 	PlanRun()
+	PropRun()
 }

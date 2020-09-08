@@ -105,7 +105,7 @@ func Socket(msg []byte) []byte {
 	case "backpack/list":
 		backpacks := service.GetBackpackList(model.UserInfo.UID)
 
-		return serializer.JsonByte(http.StatusOK, "success", backpacks, "")
+		return serializer.JsonByte(constbase.BACKPACK_LIST, "success", backpacks, "")
 	case "backpack/prop/use":
 		params := model.NewPropUse()
 		err = json.Unmarshal([]byte(m.Content), params)

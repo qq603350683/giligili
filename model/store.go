@@ -13,6 +13,8 @@ type Store struct {
 	PID int `json:"p_id" gorm:"column:p_id;type:int(10) unsigned;not null;default:0;comment:'道具ID 来自 prop 表的 p_id'"`
 	Gold int `json:"gold" gorm:"column:gold;type:int(10) unsigned;not null;default:0;comment:'道具所需的金币价值'"`
 	Diamond int `json:"diamond" gorm:"column:diamond;type:int(10) unsigned;not null;default:0;comment:'道具所需的钻石价值'"`
+	MinQuantity int `json:"min_quantity" gorm:"column:min_quantity;type:int(10) unsigned;not null;default:0;comment:'随机最低数量'"`
+	MaxQuantity int `json:"max_quantity" gorm:"column:max_quantity;type:int(10) unsigned;not null;default:0;comment:'随机最多数量'"`
 	PorpDetail *Prop `json:"prop" comment:"道具详情"`
 	Sell int `json:"-" gorm:"column:sell;type:int(10) unsigned;not null;default:0;comment:'卖出数量'"`
 	Sort int `json:"-" gorm:"column:sort;type:int(10) unsigned;not null;default:0;comment:'排序'"`
