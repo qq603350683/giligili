@@ -5,6 +5,7 @@ import (
 	"giligili/constbase"
 	"github.com/jinzhu/gorm"
 	"log"
+	"math/rand"
 	"time"
 )
 
@@ -31,6 +32,8 @@ type PropUse struct {
 
 type PropUseResult struct {
 	PID int `json:"p_id" comment:"道具ID"`
+	Type string `json:"type" comment:"道具类型"`
+	Quantity int `json:"quantity" comment:"数量"`
 	EnhancerlResult string `json:"enhancer_result" comment:"强化结果"`
 }
 
@@ -112,6 +115,44 @@ func (backpack *Backpack) Use() bool {
 
 	return true
 }
+
+// 打开金币礼包
+func (backpack *Backpack) UseGold() (int, bool) {
+	if backpack.IsUse == constbase.YES {
+		return 0, false
+	}
+
+	var b bool
+	var quantity int
+
+	if backpack.PropDetail.MinQuantity == backpack.PropDetail.MaxQuantity {
+		// 固定金币金额
+		quantity = backpack.PropDetail.MinQuantity
+		b = backpack.PropDetail.AddToUserGold(backpack.PropDetail.MinQuantity)
+	} else {
+		// 随机金币金额
+		rand.Seed(time.Now().Unix())
+		quantity = rand.Intn(backpack.PropDetail.MaxQuantity) + backpack.PropDetail.MinQuantity
+
+		b = backpack.PropDetail.AddToUserGold(quantity)
+	}
+
+	if b == false {
+		return 0, false
+	}
+
+	backpack.IsUse = constbase.YES
+	backpack.UseAt = time.Now()
+
+	err := DB.Save(backpack).Error
+	if err != nil {
+		log.Println(err.Error())
+		return 0, false
+	}
+
+	return quantity, true
+}
+
 
 // 子弹强化器
 func (backpack *Backpack) UseBulletEnhancer(up_id int, id int) bool {

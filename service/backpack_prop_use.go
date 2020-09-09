@@ -11,6 +11,7 @@ func BackpackPropUse(params *model.PropUse) *model.PropUseResult {
 	b := false
 
 	result := model.NewPropUseResult()
+	result.PID = params.PID
 	result.EnhancerlResult = constbase.ENHANCER_FAIL
 
 	if params.PID == 0 {
@@ -23,6 +24,8 @@ func BackpackPropUse(params *model.PropUse) *model.PropUseResult {
 		return result
 	}
 
+	result.Type = prop.Type
+
 	// 获取背包的道具
 	backpack := model.GetMyBackpackInfo(prop.PID)
 	if backpack == nil {
@@ -34,6 +37,13 @@ func BackpackPropUse(params *model.PropUse) *model.PropUseResult {
 	db := model.DB.Begin()
 
 	switch prop.Type {
+	case constbase.PROP_TYPE_GOLD:
+		quantity, b := backpack.UseGold()
+		result.Quantity = quantity
+		if b == false {
+			db.Rollback()
+			return result
+		}
 	case constbase.PROP_TYPE_BULLET_ENHANCER:
 		b = backpack.UseBulletEnhancer(params.UpID, params.ID)
 	case constbase.PROP_TYPE_BULLET_SPEED_ENHANCER:

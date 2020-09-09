@@ -25,6 +25,8 @@ func PropRun() {
 		Image:     "prop/gold.png",
 		Title:     "金币大礼包",
 		Remark:    "金币大礼包",
+		MinQuantity: 100,
+		MaxQuantity: 100,
 		CreatedAt: time.Now(),
 	})
 
@@ -34,6 +36,8 @@ func PropRun() {
 		Image:     "prop/diamond.png",
 		Title:     "钻石大礼包",
 		Remark:    "钻石大礼包",
+		MinQuantity: 5,
+		MaxQuantity: 5,
 		CreatedAt: time.Now(),
 	})
 

@@ -10,9 +10,11 @@ import (
 type Prop struct {
 	PID int `json:"p_id" gorm:"column:p_id;type:int(10) unsigned auto_increment;not null;primary_key;comment:'道具ID'"`
 	Type string `json:"type" gorm:"column:type;type:enum('gold','diamond','stone_enhancer_material','stone_speed_enhancer_material','bullet_enhancer','bullet_speed_enhancer','skill_enhancer','skill_speed_enhancer');not null;comment:'道具分类'"`
-	Image string `json:"image" gorm:"column:image;type:varchar(50);default:'';not null;comment:'图标'"`
+	Image string `json:"image" gorm:"column:image;type:varchar(100);default:'';not null;comment:'图标'"`
 	Title string `json:"title" gorm:"column:title;type:varchar(50);default:'';not null;comment:'标题'"`
 	Remark string `json:"-" gorm:"column:remark;type:varchar(50);default:'';not null;comment:'备注说明、领取途径等'"`
+	MinQuantity int `json:"min_quantity" gorm:"column:min_quantity;type:int(10) unsigned;not null;default:0;comment:'随机最低数量'"`
+	MaxQuantity int `json:"max_quantity" gorm:"column:max_quantity;type:int(10) unsigned;not null;default:0;comment:'随机最多数量'"`
 	CreatedAt time.Time `json:"-" gorm:"column:created_at;type:datetime;not null;comment:'签到时间'"`
 }
 
