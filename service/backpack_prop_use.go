@@ -9,6 +9,8 @@ import (
 
 func BackpackPropUse(params *model.PropUse) *model.PropUseResult {
 	b := false
+	quantity := 0
+	enhancer_result := false
 
 	result := model.NewPropUseResult()
 	result.PID = params.PID
@@ -38,24 +40,27 @@ func BackpackPropUse(params *model.PropUse) *model.PropUseResult {
 
 	switch prop.Type {
 	case constbase.PROP_TYPE_GOLD:
-		quantity, b := backpack.UseGold()
+		quantity, b = backpack.OpenGoldPack()
 		result.Quantity = quantity
-		if b == false {
-			db.Rollback()
-			return result
-		}
+	case constbase.PROP_TYPE_DIAMOND:
+		quantity, b = backpack.OpenDiamondPack()
+		result.Quantity = quantity
 	case constbase.PROP_TYPE_BULLET_ENHANCER:
-		b = backpack.UseBulletEnhancer(params.UpID, params.ID)
+		enhancer_result, b = backpack.UseBulletEnhancer(params.UpID, params.BID)
 	case constbase.PROP_TYPE_BULLET_SPEED_ENHANCER:
-		b = backpack.UseBulletSpeedEnhancer(params.UpID, params.ID)
+		enhancer_result, b = backpack.UseBulletSpeedEnhancer(params.UpID, params.BID)
 	case constbase.PROP_TYPE_SKILL_ENHANCER:
+		enhancer_result, b = backpack.UseSkillEnhancer(params.UpID, params.SID)
 	case constbase.PROP_TYPE_SKILL_SPEED_ENHANCER:
+		enhancer_result, b = backpack.UseSkillSpeedEnhancer(params.UpID, params.SID)
 	}
 
 	if b == false {
 		db.Rollback()
 		return result
-	} else {
+	}
+
+	if enhancer_result == true {
 		result.EnhancerlResult = constbase.ENHANCER_SUCCESS
 	}
 

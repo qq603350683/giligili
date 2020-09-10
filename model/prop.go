@@ -15,7 +15,9 @@ type Prop struct {
 	Remark string `json:"-" gorm:"column:remark;type:varchar(50);default:'';not null;comment:'备注说明、领取途径等'"`
 	MinQuantity int `json:"min_quantity" gorm:"column:min_quantity;type:int(10) unsigned;not null;default:0;comment:'随机最低数量'"`
 	MaxQuantity int `json:"max_quantity" gorm:"column:max_quantity;type:int(10) unsigned;not null;default:0;comment:'随机最多数量'"`
-	CreatedAt time.Time `json:"-" gorm:"column:created_at;type:datetime;not null;comment:'签到时间'"`
+	GoldValue int `json:"gold_value" gorm:"column:gold_value;type:int(10) unsigned;not null;default:0;comment:'售出所值金币'"`
+	DiamondValue int `json:"gold_value" gorm:"column:diamond_value;type:int(10) unsigned;not null;default:0;comment:'售出所值钻石'"`
+	CreatedAt time.Time `json:"-" gorm:"column:created_at;type:datetime;not null;comment:'添加时间'"`
 }
 
 // 展示在前端的格式

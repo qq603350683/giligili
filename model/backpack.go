@@ -27,7 +27,8 @@ type Backpack struct {
 type PropUse struct {
 	PID int `json:"p_id" comment:"道具ID"`
 	UpID int `json:"up_id" comment:"飞机ID"`
-	ID int `json:"b_id" comment:"子弹ID"`
+	BID int `json:"b_id" comment:"子弹ID"`
+	SID int `json:"s_id" comment:"技能ID"`
 }
 
 type PropUseResult struct {
@@ -117,7 +118,7 @@ func (backpack *Backpack) Use() bool {
 }
 
 // 打开金币礼包
-func (backpack *Backpack) UseGold() (int, bool) {
+func (backpack *Backpack) OpenGoldPack() (int, bool) {
 	if backpack.IsUse == constbase.YES {
 		return 0, false
 	}
@@ -132,7 +133,7 @@ func (backpack *Backpack) UseGold() (int, bool) {
 	} else {
 		// 随机金币金额
 		rand.Seed(time.Now().Unix())
-		quantity = rand.Intn(backpack.PropDetail.MaxQuantity) + backpack.PropDetail.MinQuantity
+		quantity = rand.Intn(backpack.PropDetail.MaxQuantity - backpack.PropDetail.MinQuantity) + backpack.PropDetail.MinQuantity
 
 		b = backpack.PropDetail.AddToUserGold(quantity)
 	}
@@ -153,16 +154,54 @@ func (backpack *Backpack) UseGold() (int, bool) {
 	return quantity, true
 }
 
+// 打开钻石大礼包
+func (backpack *Backpack) OpenDiamondPack() (int, bool) {
+	if backpack.IsUse == constbase.YES {
+		return 0, false
+	}
+
+	var b bool
+	var quantity int
+
+	if backpack.PropDetail.MinQuantity == backpack.PropDetail.MaxQuantity {
+		// 固定金币金额
+		quantity = backpack.PropDetail.MinQuantity
+		b = backpack.PropDetail.AddToUserDiamond(backpack.PropDetail.MinQuantity)
+	} else {
+		// 随机金币金额
+		rand.Seed(time.Now().Unix())
+		quantity = rand.Intn(backpack.PropDetail.MaxQuantity - backpack.PropDetail.MinQuantity) + backpack.PropDetail.MinQuantity
+
+		b = backpack.PropDetail.AddToUserDiamond(quantity)
+	}
+
+	if b == false {
+		return 0, false
+	}
+
+	backpack.IsUse = constbase.YES
+	backpack.UseAt = time.Now()
+
+	err := DB.Save(backpack).Error
+	if err != nil {
+		log.Println(err.Error())
+		return 0, false
+	}
+
+	return quantity, true
+}
 
 // 子弹强化器
-func (backpack *Backpack) UseBulletEnhancer(up_id int, id int) bool {
+func (backpack *Backpack) UseBulletEnhancer(up_id int, id int) (bool, bool) {
+	enhancer_result := false
+
 	plan := GetUserPlanInfo(up_id)
 	if plan == nil {
-		return false
+		return enhancer_result, false
 	}
 
 	if plan.UID != UserInfo.UID {
-		return false
+		return enhancer_result, false
 	}
 
 	index := -1
@@ -178,17 +217,17 @@ func (backpack *Backpack) UseBulletEnhancer(up_id int, id int) bool {
 
 	if bullet.BID == 0 {
 		log.Println("请选择需要强化的 bullet: b_id 不能为0")
-		return false
+		return enhancer_result, false
 	}
 
 	if index == -1 {
 		log.Println("请选择需要强化的 bullet: index 不能为 -1")
-		return false
+		return enhancer_result, false
 	}
 
-	b := GetBulletEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Level)
+	enhancer_result = GetBulletEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Level)
 
-	if b == true {
+	if enhancer_result == true {
 		// 强化成功
 		bullet.Level += 1
 
@@ -204,22 +243,24 @@ func (backpack *Backpack) UseBulletEnhancer(up_id int, id int) bool {
 		err = DB.Save(plan).Error
 		if err != nil {
 			log.Println(err.Error())
-			return false
+			return enhancer_result, false
 		}
 	}
 
-	return true
+	return enhancer_result, true
 }
 
 // 子弹速度强化器
-func (backpack *Backpack) UseBulletSpeedEnhancer(up_id int, id int) bool {
+func (backpack *Backpack) UseBulletSpeedEnhancer(up_id int, id int) (bool, bool) {
+	enhancer_result := false
+
 	plan := GetUserPlanInfo(up_id)
 	if plan == nil {
-		return false
+		return enhancer_result, false
 	}
 
 	if plan.UID != UserInfo.UID {
-		return false
+		return enhancer_result, false
 	}
 
 	index := -1
@@ -234,16 +275,16 @@ func (backpack *Backpack) UseBulletSpeedEnhancer(up_id int, id int) bool {
 	}
 
 	if bullet.BID == 0 {
-		return false
+		return enhancer_result, false
 	}
 
 	if index == -1 {
-		return false
+		return enhancer_result, false
 	}
 
-	b := GetSpeedEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Speed)
+	enhancer_result = GetSpeedEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Speed)
 
-	if b == true {
+	if enhancer_result == true {
 		// 强化成功
 		bullet.Speed += 1
 
@@ -259,9 +300,126 @@ func (backpack *Backpack) UseBulletSpeedEnhancer(up_id int, id int) bool {
 		err = DB.Save(plan).Error
 		if err != nil {
 			log.Println(err.Error())
-			return false
+			return enhancer_result, false
 		}
 	}
 
-	return true
+	return enhancer_result, true
+}
+
+// 技能强化器
+func (backpack *Backpack) UseSkillEnhancer(up_id int, id int) (bool, bool) {
+	enhancer_result := false
+
+	plan := GetUserPlanInfo(up_id)
+	if plan == nil {
+		return enhancer_result, false
+	}
+
+	if plan.UID != UserInfo.UID {
+		log.Printf("您(u_id: %d)没有权限操作(up_id: %d)", UserInfo.UID, up_id)
+		return enhancer_result, false
+	}
+
+	index := -1
+	skill := Skill{}
+
+	for i, b := range(plan.Detail.Skills) {
+		if b.SID == id {
+			index = i
+			skill = b
+			break
+		}
+	}
+
+	if skill.SID == 0 {
+		log.Println("请选择需要强化的 skill: s_id 不能为0")
+		return enhancer_result, false
+	}
+
+	if index == -1 {
+		log.Println("请选择需要强化的 skill: index 不能为 -1")
+		return enhancer_result, false
+	}
+
+	enhancer_result = GetBulletEnhancerIsSuccess(backpack.PropDetail.Type, skill.Level)
+
+	if enhancer_result == true {
+		// 强化成功
+		skill.Level += 1
+
+		plan.Detail.Skills[index] = skill
+
+		str, err := json.Marshal(plan.Detail)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		plan.DetailJson = string(str)
+
+		err = DB.Save(plan).Error
+		if err != nil {
+			log.Println(err.Error())
+			return enhancer_result, false
+		}
+	}
+
+	return enhancer_result, true
+}
+
+// 技能速度强化器
+func (backpack *Backpack) UseSkillSpeedEnhancer(up_id int, id int) (bool, bool) {
+	enhancer_result := false
+
+	plan := GetUserPlanInfo(up_id)
+	if plan == nil {
+		return enhancer_result, false
+	}
+
+	if plan.UID != UserInfo.UID {
+		return enhancer_result, false
+	}
+
+	index := -1
+	skill := Skill{}
+
+	for i, b := range(plan.Detail.Skills) {
+		if b.SID == id {
+			index = i
+			skill = b
+			break
+		}
+	}
+
+	if skill.SID == 0 {
+		return enhancer_result, false
+	}
+
+	if index == -1 {
+		return enhancer_result, false
+	}
+
+	enhancer_result = GetSpeedEnhancerIsSuccess(backpack.PropDetail.Type, skill.Speed)
+
+	if enhancer_result == true {
+		// 强化成功
+		skill.Speed += 1
+
+		plan.Detail.Skills[index] = skill
+
+		str, err := json.Marshal(plan.Detail)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		plan.DetailJson = string(str)
+
+		err = DB.Save(plan).Error
+		if err != nil {
+			log.Println(err.Error())
+			return enhancer_result, false
+		}
+	}
+
+	return enhancer_result, true
 }

@@ -11,10 +11,10 @@ type Store struct {
 	SID int `json:"s_id" gorm:"column:s_id;type:int(10) unsigned auto_increment;not null;primary_key;comment:'商店道具ID'"`
 	Title string `json:"title" gorm:"column:title;type:varchar(50);default:'';not null;comment:'标题'"`
 	PID int `json:"p_id" gorm:"column:p_id;type:int(10) unsigned;not null;default:0;comment:'道具ID 来自 prop 表的 p_id'"`
+	PlanID int `json:"plan_id" gorm:"column:plan_id;type:int(10) unsigned;not null;default:0;comment:'飞机ID 来自 plans 表的 p_id'"`
 	Gold int `json:"gold" gorm:"column:gold;type:int(10) unsigned;not null;default:0;comment:'道具所需的金币价值'"`
 	Diamond int `json:"diamond" gorm:"column:diamond;type:int(10) unsigned;not null;default:0;comment:'道具所需的钻石价值'"`
-	MinQuantity int `json:"min_quantity" gorm:"column:min_quantity;type:int(10) unsigned;not null;default:0;comment:'随机最低数量'"`
-	MaxQuantity int `json:"max_quantity" gorm:"column:max_quantity;type:int(10) unsigned;not null;default:0;comment:'随机最多数量'"`
+	Quantity int `json:"quantity" gorm:"column:quantity;type:int(10) unsigned;not null;default:0;comment:'道具个数'"`
 	PorpDetail *Prop `json:"prop" comment:"道具详情"`
 	Sell int `json:"-" gorm:"column:sell;type:int(10) unsigned;not null;default:0;comment:'卖出数量'"`
 	Sort int `json:"-" gorm:"column:sort;type:int(10) unsigned;not null;default:0;comment:'排序'"`
