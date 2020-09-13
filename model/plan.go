@@ -23,7 +23,7 @@ type PlanDetail struct {
 // 普通子弹
 type Bullet struct {
 	BID int `json:"id" comment:"暂时不要"`
-	Name string `json:"-" comment:"名字"`
+	Title string `json:"title" comment:"名字"`
 	Width int `json:"w" comment:"宽度"`
 	Height int `json:"h" comment:"高度"`
 	Position int8 `json:"p" comment:"位置"`
@@ -40,7 +40,7 @@ type Bullet struct {
 // 被动技能
 type Skill struct {
 	SID int `json:"id" comment:"暂时不要"`
-	Name string `json:"-" comment:"名字"`
+	Title string `json:"title" comment:"名字"`
 	Width int `json:"w" comment:"宽度"`
 	Height int `json:"h" comment:"高度"`
 	Position int8 `json:"p" comment:"位置"`
