@@ -5,4 +5,5 @@ func Run() {
 	LevelRun()
 	PlanRun()
 	PropRun()
+	StoreRun()
 }

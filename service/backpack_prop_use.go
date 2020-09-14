@@ -49,10 +49,14 @@ func BackpackPropUse(params *model.PropUse) *model.PropUseResult {
 		enhancer_result, b = backpack.UseBulletEnhancer(params.UpID, params.BID)
 	case constbase.PROP_TYPE_BULLET_SPEED_ENHANCER:
 		enhancer_result, b = backpack.UseBulletSpeedEnhancer(params.UpID, params.BID)
+	case constbase.PROP_TYPE_BULLET_RATE_ENHANCER:
+		enhancer_result, b = backpack.UseBulletRateEnhancer(params.UpID, params.BID)
 	case constbase.PROP_TYPE_SKILL_ENHANCER:
 		enhancer_result, b = backpack.UseSkillEnhancer(params.UpID, params.SID)
 	case constbase.PROP_TYPE_SKILL_SPEED_ENHANCER:
 		enhancer_result, b = backpack.UseSkillSpeedEnhancer(params.UpID, params.SID)
+	case constbase.PROP_TYPE_SKILL_RATE_ENHANCER:
+		enhancer_result, b = backpack.UseSkillRateEnhancer(params.UpID, params.SID)
 	}
 
 	if b == false {

@@ -248,6 +248,11 @@ func (backpack *Backpack) UseBulletEnhancer(up_id int, id int) (bool, bool) {
 		return enhancer_result, false
 	}
 
+	// 已达到最高强化级别
+	if plan.Detail.Bullets[index].MaxLevel >= plan.Detail.Bullets[index].Level {
+		return enhancer_result, false
+	}
+
 	enhancer_result = GetBulletEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Level)
 
 	if enhancer_result == true {
@@ -307,9 +312,76 @@ func (backpack *Backpack) UseBulletSpeedEnhancer(up_id int, id int) (bool, bool)
 
 	enhancer_result = GetSpeedEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Speed)
 
+	// 已达到最高强化级别
+	if plan.Detail.Bullets[index].MaxSpeed >= plan.Detail.Bullets[index].Speed {
+		return enhancer_result, false
+	}
+
 	if enhancer_result == true {
 		// 强化成功
 		bullet.Speed += 1
+
+		plan.Detail.Bullets[index] = bullet
+
+		str, err := json.Marshal(plan.Detail)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		plan.DetailJson = string(str)
+
+		err = DB.Save(plan).Error
+		if err != nil {
+			log.Println(err.Error())
+			return enhancer_result, false
+		}
+	}
+
+	return enhancer_result, true
+}
+
+// 子弹频率强化器
+func (backpack *Backpack) UseBulletRateEnhancer(up_id int, id int) (bool, bool) {
+	enhancer_result := false
+
+	plan := GetUserPlanInfo(up_id)
+	if plan == nil {
+		return enhancer_result, false
+	}
+
+	if plan.UID != UserInfo.UID {
+		return enhancer_result, false
+	}
+
+	index := -1
+	bullet := Bullet{}
+
+	for i, b := range(plan.Detail.Bullets) {
+		if b.BID == id {
+			index = i
+			bullet = b
+			break
+		}
+	}
+
+	if bullet.BID == 0 {
+		return enhancer_result, false
+	}
+
+	if index == -1 {
+		return enhancer_result, false
+	}
+
+	// 已达到最高强化级别
+	if plan.Detail.Bullets[index].MaxRate >= plan.Detail.Bullets[index].Rate {
+		return enhancer_result, false
+	}
+
+	enhancer_result = GetSpeedEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Speed)
+
+	if enhancer_result == true {
+		// 强化成功
+		bullet.Rate += 1
 
 		plan.Detail.Bullets[index] = bullet
 
@@ -362,6 +434,11 @@ func (backpack *Backpack) UseSkillEnhancer(up_id int, id int) (bool, bool) {
 
 	if index == -1 {
 		log.Println("请选择需要强化的 skill: index 不能为 -1")
+		return enhancer_result, false
+	}
+
+	// 已达到最高强化级别
+	if plan.Detail.Skills[index].MaxLevel >= plan.Detail.Skills[index].Level {
 		return enhancer_result, false
 	}
 
@@ -422,11 +499,78 @@ func (backpack *Backpack) UseSkillSpeedEnhancer(up_id int, id int) (bool, bool) 
 		return enhancer_result, false
 	}
 
+	// 已达到最高强化级别
+	if plan.Detail.Skills[index].MaxSpeed >= plan.Detail.Skills[index].Speed {
+		return enhancer_result, false
+	}
+
 	enhancer_result = GetSpeedEnhancerIsSuccess(backpack.PropDetail.Type, skill.Speed)
 
 	if enhancer_result == true {
 		// 强化成功
 		skill.Speed += 1
+
+		plan.Detail.Skills[index] = skill
+
+		str, err := json.Marshal(plan.Detail)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		plan.DetailJson = string(str)
+
+		err = DB.Save(plan).Error
+		if err != nil {
+			log.Println(err.Error())
+			return enhancer_result, false
+		}
+	}
+
+	return enhancer_result, true
+}
+
+// 子弹射频强化器
+func (backpack *Backpack) UseSkillRateEnhancer(up_id int, id int) (bool, bool) {
+	enhancer_result := false
+
+	plan := GetUserPlanInfo(up_id)
+	if plan == nil {
+		return enhancer_result, false
+	}
+
+	if plan.UID != UserInfo.UID {
+		return enhancer_result, false
+	}
+
+	index := -1
+	skill := Skill{}
+
+	for i, b := range(plan.Detail.Skills) {
+		if b.SID == id {
+			index = i
+			skill = b
+			break
+		}
+	}
+
+	if skill.SID == 0 {
+		return enhancer_result, false
+	}
+
+	if index == -1 {
+		return enhancer_result, false
+	}
+
+	// 已达到最高强化级别
+	if plan.Detail.Skills[index].MaxRate >= plan.Detail.Skills[index].Rate {
+		return enhancer_result, false
+	}
+
+	enhancer_result = GetSpeedEnhancerIsSuccess(backpack.PropDetail.Type, skill.Speed)
+
+	if enhancer_result == true {
+		// 强化成功
+		skill.Rate += 1
 
 		plan.Detail.Skills[index] = skill
 

@@ -8,8 +8,10 @@ const (
 	PROP_TYPE_DIAMOND = "diamond"
 	PROP_TYPE_BULLET_ENHANCER = "bullet_enhancer"
 	PROP_TYPE_BULLET_SPEED_ENHANCER = "bullet_speed_enhancer"
+	PROP_TYPE_BULLET_RATE_ENHANCER = "bullet_rate_enhancer"
 	PROP_TYPE_SKILL_ENHANCER = "skill_enhancer"
 	PROP_TYPE_SKILL_SPEED_ENHANCER = "skill_speed_enhancer"
+	PROP_TYPE_SKILL_RATE_ENHANCER = "skill_rate_enhancer"
 
 	ENHANCER_SUCCESS = "success"
 	ENHANCER_FAIL = "fail"
