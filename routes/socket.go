@@ -116,6 +116,16 @@ func Socket(msg []byte) []byte {
 		result := service.BackpackPropUse(params)
 
 		return  serializer.JsonByte(constbase.ENHANCER_RESULT, "success", result, "")
+	case "backpack/prop/sell":
+		params := service.NewPropSell()
+		err = json.Unmarshal([]byte(m.Content), params)
+		if err != nil {
+			return serializer.JsonByte(http.StatusInternalServerError, "数据解析失败", nil, "")
+		}
+
+		result := service.BackpackPropSell(params.PID)
+
+		return  serializer.JsonByte(constbase.ENHANCER_RESULT, "success", result, "")
 	case "store/list":
 		stores := service.GetStoreList()
 

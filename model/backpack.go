@@ -20,6 +20,7 @@ type Backpack struct {
 	//Title string `json:"title" gorm:"column:title;type:varchar(50);not null;comment:'标题'"`
 	//Remark string `json:"-" gorm:"column:remark;type:varchar(50);not null;comment:'备注说明、领取途径等'"`
 	IsUse int8 `json:"-" gorm:"column:is_use;type:int(1);not null;default:0;comment:'是否已使用 0 - 未使用 1 - 已使用'"`
+	IsSell int8 `json:"-" gorm:"column:is_sell;type:int(1);not null;default:0;comment:'是否已出售 0 - 未出售 1 - 已出售'"`
 	UseAt time.Time `json:"-" gorm:"type:datetime;not null;default:'1000-01-01 00:00:00'; comment:'使用时间'"`
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at; type:datetime; not null; comment:'创建时间'"`
 }
@@ -111,6 +112,28 @@ func (backpack *Backpack) Use() bool {
 	err := DB.Save(backpack).Error
 	if err != nil {
 		log.Println(err.Error())
+		return false
+	}
+
+	return true
+}
+
+// 出售
+func (backpack *Backpack) Sell() bool {
+	if backpack.IsUse == constbase.YES {
+		return false
+	}
+
+	if backpack.IsSell == constbase.YES {
+		return false
+	}
+
+	res := DB.Model(backpack).Where("is_use = 0 AND is_sell = 0").UpdateColumns(map[string]interface{} {
+		"is_use": constbase.YES,
+		"is_sell": constbase.YES,
+		"use_at": time.Now(),
+	})
+	if res.RowsAffected == 0 {
 		return false
 	}
 

@@ -9,7 +9,7 @@ import (
 
 type Prop struct {
 	PID int `json:"p_id" gorm:"column:p_id;type:int(10) unsigned auto_increment;not null;primary_key;comment:'道具ID'"`
-	Type string `json:"type" gorm:"column:type;type:enum('gold','diamond','stone_enhancer_material','stone_speed_enhancer_material','bullet_enhancer','bullet_speed_enhancer','skill_enhancer','skill_speed_enhancer');not null;comment:'道具分类'"`
+	Type string `json:"type" gorm:"column:type;type:enum('gold','diamond','stone_enhancer_material','stone_speed_enhancer_material','bullet_enhancer','bullet_speed_enhancer','bullet_rate_enhancer','skill_enhancer','skill_speed_enhancer','skill_rate_enhancer');not null;comment:'道具分类'"`
 	Image string `json:"image" gorm:"column:image;type:varchar(100);default:'';not null;comment:'图标'"`
 	Title string `json:"title" gorm:"column:title;type:varchar(50);default:'';not null;comment:'标题'"`
 	Remark string `json:"-" gorm:"column:remark;type:varchar(50);default:'';not null;comment:'备注说明、领取途径等'"`
@@ -38,6 +38,28 @@ func GetPropInfo(p_id int) *Prop {
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			log.Printf("道具ID(%d)找不到记录: ", p_id)
+		} else {
+			log.Println(err.Error())
+		}
+
+		return nil
+	}
+
+	return prop
+}
+
+// 根据类型获取道具详情
+func GetPropInfoByType(_type string) *Prop {
+	if _type == "" {
+		return nil
+	}
+
+	prop := &Prop{}
+
+	err := DB.Where("type = ?", _type).First(prop).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			log.Printf("道具Type(%s)找不到记录: ", _type)
 		} else {
 			log.Println(err.Error())
 		}
