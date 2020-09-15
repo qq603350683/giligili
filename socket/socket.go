@@ -6,6 +6,7 @@ import (
 	"giligili/model"
 	"giligili/routes"
 	"giligili/serializer"
+	"giligili/service"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
@@ -46,7 +47,17 @@ func SendMessage(u_id int, message []byte) {
 func Run() {
 	WebsocketConns = NewWebsocketPool()
 
-	http.HandleFunc("/qqq", func (w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/wechat-login", func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query()
+
+		//033nrF1w3r9cZU2yN23w3xTGkN1nrF1d
+
+		if code, ok := query["code"]; ok {
+			service.WechantLogin(code[0])
+		}
+	})
+
+	http.HandleFunc("/plan", func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrade.Upgrade(w, r, nil)
 		if err != nil {
 			log.Printf("websocket 错误: %s", err.Error())
@@ -150,9 +161,9 @@ func Run() {
 
 	switch sys_type {
 	case "linux":
-		err = http.ListenAndServeTLS("0.0.0.0:8888", "4501984_www.yfwethink.com.pem", "4501984_www.yfwethink.com.key", nil)
+		err = http.ListenAndServeTLS("0.0.0.0:9501", "4501984_www.yfwethink.com.pem", "4501984_www.yfwethink.com.key", nil)
 	case "windows":
-		err = http.ListenAndServe("0.0.0.0:8888", nil)
+		err = http.ListenAndServe("0.0.0.0:9501", nil)
 	}
 
 	if (err != nil) {

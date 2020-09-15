@@ -29,6 +29,11 @@ const (
 	WEBSOCKET_MESSAGE_TYPE_PING = 9
 	WEBSOCKET_MESSAGE_TYPE_PONG = 10
 
+	//登录失败
+	LOGIN_FAIL = 227
+	//登录成功
+	LOGIN_SUCCESS = 228
+
 	// 登录用户信息详情
 	LOGIN_USER_INFO = 229
 	// 强化成功

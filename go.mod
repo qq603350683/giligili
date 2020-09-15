@@ -11,4 +11,5 @@ require github.com/gorilla/websocket v1.4.1
 require (
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/joho/godotenv v1.3.0
+	golang.org/x/sys v0.0.0-20200915084602-288bc346aa39 // indirect
 )

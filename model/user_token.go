@@ -17,6 +17,15 @@ type UserToken struct {
 	ExpiredAt time.Time `json:"expired_at" gorm:"type:datetime; not null; comment:'过期时间'"`
 }
 
+func NewUserToken() *UserToken {
+	user_token := &UserToken{}
+	user_token.Token = `zzzzz`
+	user_token.CreatedAt = time.Now()
+	user_token.ExpiredAt = time.Now().AddDate(0, 0, 30)
+
+	return user_token
+}
+
 // 根据 token 获取详情
 func GetInfoByToken(token string) *UserToken {
 	ut := &UserToken{}

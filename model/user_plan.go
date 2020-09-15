@@ -16,6 +16,13 @@ type UserPlan struct {
 	CreatedAt time.Time `json:"-" gorm:"column:created_at; type:datetime; not null; comment:'创建时间'"`
 }
 
+func NewUserPlan() *UserPlan {
+	user_plan := &UserPlan{}
+	user_plan.CreatedAt = time.Now()
+
+	return user_plan
+}
+
 func GetUserPlanInfo(up_id int) *UserPlan {
 	if up_id == 0 {
 		return nil

@@ -17,4 +17,5 @@ func migration() {
 	DB.AutoMigrate(&Store{})
 	DB.AutoMigrate(&UserPassLevel{})
 	DB.AutoMigrate(&Plan{})
+	DB.AutoMigrate(&WechatUser{})
 }

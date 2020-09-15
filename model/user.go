@@ -20,6 +20,13 @@ type User struct {
 	DelAt time.Time `json:"-" gorm:"type:datetime;not null;default:'1000-01-01 00:00:00'; comment:'删除时间'"`
 }
 
+func NewUser() *User {
+	user := &User{}
+	user.CreatedAt = time.Now()
+
+	return user
+}
+
 // 获取用户详情
 func GetUserInfo(u_id int) *User {
 	if u_id == 0 {
