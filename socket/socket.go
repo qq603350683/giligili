@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"runtime"
 	"time"
 )
 
@@ -140,9 +141,20 @@ func Run() {
 		}(token[0], conn)
 	})
 
-	log.Printf("启动....")
+	var err error
 
-	err := http.ListenAndServe("127.0.0.1:8888", nil)
+	// 获取当前操作系统
+	sys_type := runtime.GOOS
+
+	log.Printf("%s 启动....", sys_type)
+
+	switch sys_type {
+	case "linux":
+		err = http.ListenAndServeTLS("0.0.0.0:8888", "4501984_www.yfwethink.com.pem", "4501984_www.yfwethink.com.key", nil)
+	case "windows":
+		err = http.ListenAndServe("0.0.0.0:8888", nil)
+	}
+
 	if (err != nil) {
 		panic(err)
 	}
