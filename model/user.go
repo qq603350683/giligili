@@ -151,9 +151,6 @@ func (user *User) ChangePlan(up_id int) bool {
 		return true
 	}
 
-	log.Println(UserInfo.UpID)
-	log.Println(up_id)
-
 	current_user_plan := GetUserPlanInfo(UserInfo.UpID)
 	if current_user_plan == nil {
 		return false
@@ -163,29 +160,40 @@ func (user *User) ChangePlan(up_id int) bool {
 		return false
 	}
 
+	db := DB.Begin()
+
 	user_plan := GetUserPlanInfo(up_id)
 	if user_plan == nil {
+		db.Rollback()
 		return false
 	}
 
 	if user_plan.UID != UserInfo.UID {
+		db.Rollback()
 		return false
 	}
 
-	res := DB.Model(user_plan).Update("is_put_on", constbase.YES)
+	res := db.Model(user_plan).Update("is_put_on", constbase.YES)
 	if res.RowsAffected == 0 {
+		db.Rollback()
 		return false
 	}
 
-	res = DB.Model(current_user_plan).Update("is_put_on", constbase.NO)
+	res = db.Model(current_user_plan).Update("is_put_on", constbase.NO)
 	if res.RowsAffected == 0 {
+		db.Rollback()
 		return false
 	}
 
-	res = DB.Model(UserInfo).Update("up_id", up_id)
+	res = db.Model(UserInfo).Update("up_id", up_id)
 	if res.RowsAffected == 0 {
+		db.Rollback()
 		return false
 	}
+
+	db.Commit()
+
+	UserInfo.Plan = user_plan
 
 	return true
 }

@@ -32,13 +32,6 @@ type PropUse struct {
 	SID int `json:"s_id" comment:"技能ID"`
 }
 
-type PropUseResult struct {
-	PID int `json:"p_id" comment:"道具ID"`
-	Type string `json:"type" comment:"道具类型"`
-	Quantity int `json:"quantity" comment:"数量"`
-	EnhancerlResult string `json:"enhancer_result" comment:"强化结果"`
-}
-
 func NewBackpack() *Backpack {
 	return &Backpack{
 		UseAt:      time.Time{},
@@ -48,10 +41,6 @@ func NewBackpack() *Backpack {
 
 func NewPropUse() *PropUse {
 	return &PropUse{}
-}
-
-func NewPropUseResult() *PropUseResult {
-	return &PropUseResult{}
 }
 
 func GetMyBackpackInfo(p_id int) *Backpack {
@@ -249,7 +238,7 @@ func (backpack *Backpack) UseBulletEnhancer(up_id int, id int) (bool, bool) {
 	}
 
 	// 已达到最高强化级别
-	if plan.Detail.Bullets[index].MaxLevel >= plan.Detail.Bullets[index].Level {
+	if plan.Detail.Bullets[index].MaxLevel <= plan.Detail.Bullets[index].Level {
 		return enhancer_result, false
 	}
 
@@ -313,7 +302,7 @@ func (backpack *Backpack) UseBulletSpeedEnhancer(up_id int, id int) (bool, bool)
 	enhancer_result = GetSpeedEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Speed)
 
 	// 已达到最高强化级别
-	if plan.Detail.Bullets[index].MaxSpeed >= plan.Detail.Bullets[index].Speed {
+	if plan.Detail.Bullets[index].MaxSpeed <= plan.Detail.Bullets[index].Speed {
 		return enhancer_result, false
 	}
 
@@ -381,7 +370,7 @@ func (backpack *Backpack) UseBulletRateEnhancer(up_id int, id int) (bool, bool) 
 
 	if enhancer_result == true {
 		// 强化成功
-		bullet.Rate += 1
+		bullet.Rate -= 1
 
 		plan.Detail.Bullets[index] = bullet
 
@@ -438,7 +427,7 @@ func (backpack *Backpack) UseSkillEnhancer(up_id int, id int) (bool, bool) {
 	}
 
 	// 已达到最高强化级别
-	if plan.Detail.Skills[index].MaxLevel >= plan.Detail.Skills[index].Level {
+	if plan.Detail.Skills[index].MaxLevel <= plan.Detail.Skills[index].Level {
 		return enhancer_result, false
 	}
 
@@ -500,7 +489,7 @@ func (backpack *Backpack) UseSkillSpeedEnhancer(up_id int, id int) (bool, bool) 
 	}
 
 	// 已达到最高强化级别
-	if plan.Detail.Skills[index].MaxSpeed >= plan.Detail.Skills[index].Speed {
+	if plan.Detail.Skills[index].MaxSpeed <= plan.Detail.Skills[index].Speed {
 		return enhancer_result, false
 	}
 
@@ -570,7 +559,7 @@ func (backpack *Backpack) UseSkillRateEnhancer(up_id int, id int) (bool, bool) {
 
 	if enhancer_result == true {
 		// 强化成功
-		skill.Rate += 1
+		skill.Rate -= 1
 
 		plan.Detail.Skills[index] = skill
 

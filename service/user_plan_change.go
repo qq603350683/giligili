@@ -11,15 +11,11 @@ func NewUserPlanChangeParams() *UserPlanChangeParams {
 }
 
 func UserPlanChange(up_id int) bool {
-	db := model.DB.Begin()
 
 	bool := model.UserInfo.ChangePlan(up_id)
 	if bool == false {
-		db.Rollback()
 		return false
 	}
-
-	db.Commit()
 
 	return true
 }

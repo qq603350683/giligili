@@ -67,7 +67,7 @@ func Socket(msg []byte) []byte {
 			return serializer.JsonByte(constbase.USER_PLAN_CHANGE_FAIL, "更换失败", nil, "")
 		}
 
-		return serializer.JsonByte(constbase.USER_PLAN_CHANGE_SUCCESS, "更换成功", nil, "")
+		return serializer.JsonByte(constbase.USER_PLAN_CHANGE_SUCCESS, "更换成功", model.UserInfo.Plan, "")
 	case "sign_in/create":
 		// 今天签到
 		bool, err := service.CreateSignIn(model.UserInfo.UID)

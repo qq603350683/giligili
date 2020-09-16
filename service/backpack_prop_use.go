@@ -7,14 +7,26 @@ import (
 	"time"
 )
 
-func BackpackPropUse(params *model.PropUse) *model.PropUseResult {
+type PropUseResult struct {
+	PID int `json:"p_id" comment:"道具ID"`
+	Type string `json:"type" comment:"道具类型"`
+	Quantity int `json:"quantity" comment:"数量"`
+	EnhancerlResult string `json:"enhancer_result" comment:"强化结果"`
+	Plan *model.UserPlan `json:"plan" comment:"飞机详情"`
+}
+
+func NewPropUseResult() *PropUseResult {
+	return new(PropUseResult)
+}
+
+func BackpackPropUse(params *model.PropUse) *PropUseResult {
 	b := false
 	quantity := 0
 	enhancer_result := false
 
-	result := model.NewPropUseResult()
+	result := NewPropUseResult()
 	result.PID = params.PID
-	result.EnhancerlResult = constbase.ENHANCER_FAIL
+	result.EnhancerlResult = ""
 
 	if params.PID == 0 {
 		return result
@@ -66,6 +78,9 @@ func BackpackPropUse(params *model.PropUse) *model.PropUseResult {
 
 	if enhancer_result == true {
 		result.EnhancerlResult = constbase.ENHANCER_SUCCESS
+		result.Plan = GetUserPlanInfo(params.UpID)
+	} else {
+		result.EnhancerlResult = constbase.ENHANCER_FAIL
 	}
 
 	backpack.IsUse = constbase.YES
