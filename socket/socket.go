@@ -1,6 +1,7 @@
 package socket
 
 import (
+	"encoding/json"
 	"fmt"
 	"giligili/constbase"
 	"giligili/model"
@@ -50,10 +51,13 @@ func Run() {
 	http.HandleFunc("/wechat-login", func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query()
 
-		//033nrF1w3r9cZU2yN23w3xTGkN1nrF1d
+		//c := "033nrF1w3r9cZU2yN23w3xTGkN1nrF1d"
+		//log.Println(c[4:5])
 
 		if code, ok := query["code"]; ok {
-			service.WechantLogin(code[0])
+			res := service.WechantLogin(code[0])
+			b, _ := json.Marshal(res)
+			w.Write(b)
 		}
 	})
 

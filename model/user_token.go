@@ -1,6 +1,7 @@
 package model
 
 import (
+	"giligili/util"
 	"github.com/jinzhu/gorm"
 	"log"
 	"time"
@@ -18,8 +19,9 @@ type UserToken struct {
 }
 
 func NewUserToken() *UserToken {
-	user_token := &UserToken{}
-	user_token.Token = `zzzzz`
+	user_token := new(UserToken)
+	//user_token := &UserToken{}
+	user_token.Token = util.CreateRandString(90, 100, "")
 	user_token.CreatedAt = time.Now()
 	user_token.ExpiredAt = time.Now().AddDate(0, 0, 30)
 
