@@ -13,7 +13,7 @@ import (
 type WechatLoginResult struct {
 	Message string `json:"message"`
 	Status int `json:"status"`
-	Data *model.UserToken
+	Data *model.UserToken `json:"data"`
 }
 
 // 小程序登录时返回的格式
@@ -41,7 +41,7 @@ func WechantLogin(code string) *WechatLoginResult {
 	wechat_login_result := NewWechatLoginResult()
 
 	url := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", os.Getenv("WECHAT_MINIAPP_APPID"), os.Getenv("WECHAT_MINIAPP_APPSECRET"), code)
-	log.Println(url)
+
 	str := util.CURL("GET", url, nil, nil)
 	if str == "" {
 		return wechat_login_result
