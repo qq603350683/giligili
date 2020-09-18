@@ -6,4 +6,5 @@ func Run() {
 	PlanRun()
 	PropRun()
 	StoreRun()
+	SignInPrizeRun()
 }

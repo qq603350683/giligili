@@ -214,6 +214,11 @@ func GetSpeedEnhancerIsSuccess(t string, speed int) bool {
 	}
 }
 
+func (prop *Prop) UseDB(db *gorm.DB) *Prop {
+	DBTransaction = db
+	return prop
+}
+
 // 道具加入到背包
 func (prop *Prop) AddToBackpack() bool {
 	backpack := NewBackpack()
@@ -221,10 +226,22 @@ func (prop *Prop) AddToBackpack() bool {
 	backpack.UID = UserInfo.UID
 	backpack.PID = prop.PID
 
-	err := DB.Create(backpack).Error
-	if err != nil {
+	var db *gorm.DB
+	var err error
+
+	if DBTransaction == nil {
+		db = DB
+	} else{
+		db = DBTransaction
+	}
+
+	if err = db.Create(backpack).Error; err != nil {
 		log.Printf("用户ID(%d)道具领取失败", UserInfo.UID)
 		return false
+	}
+
+	if DBTransaction != nil {
+		DBTransaction = nil
 	}
 
 	return true

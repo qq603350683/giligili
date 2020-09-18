@@ -74,7 +74,7 @@ func LevelRun() {
 
 		sql += fmt.Sprintf(str, level.LID, level.Level, level.Title, level.Background, level.VirusJson, "1000-01-01 00:00:00", "2020-09-10 09:12:18")
 	}
-	log.Println(sql)
+
 	err = model.DB.Exec(sql).Error
 	if err != nil {
 		log.Println(err.Error())

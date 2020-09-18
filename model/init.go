@@ -8,6 +8,7 @@ import (
 )
 
 var DB *gorm.DB
+var DBTransaction *gorm.DB
 
 var DelAtDefault string
 var DelAtDefaultTime time.Time

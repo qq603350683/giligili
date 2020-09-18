@@ -33,10 +33,10 @@ type PropUse struct {
 }
 
 func NewBackpack() *Backpack {
-	return &Backpack{
-		UseAt:      time.Time{},
-		CreatedAt:  time.Time{},
-	}
+	backpack := new(Backpack)
+	backpack.CreatedAt = time.Time{}
+
+	return backpack
 }
 
 func NewPropUse() *PropUse {

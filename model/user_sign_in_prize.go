@@ -11,3 +11,7 @@ type UserSignInPrize struct {
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at; type:datetime; not null; comment:'创建时间'"`
 	PorpDetail *Prop `json:"prop" gorm:"-" comment:"道具详情"`
 }
+
+func NewUserSignInPrize() *UserSignInPrize {
+	return new(UserSignInPrize)
+}

@@ -136,9 +136,10 @@ func Run() {
 				switch mtype {
 				case constbase.WEBSOCKET_MESSAGE_TYPE_TEXT:
 					//TextMessage
-					str := routes.Socket(content)
+					u_id, b := routes.Socket(content)
 
-					conn.WriteMessage(mtype, str)
+					SendMessage(u_id, b)
+					//conn.WriteMessage(mtype, str)
 				case constbase.WEBSOCKET_MESSAGE_TYPE_BINARY:
 					// BinaryMessage
 				case constbase.WEBSOCKET_MESSAGE_TYPE_CLOSE:
