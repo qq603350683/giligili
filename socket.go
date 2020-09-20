@@ -33,5 +33,8 @@ func main() {
 
 	seeder.Run()
 
+	// 添加API
+	socket.Api()
+
 	socket.Run()
 }
