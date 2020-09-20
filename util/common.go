@@ -3,6 +3,7 @@ package util
 import (
 	"errors"
 	"html"
+	"log"
 	"math/rand"
 	"strconv"
 	"time"
@@ -11,24 +12,26 @@ import (
 )
 
 // 转化为数字类型
-func ToInt(str string) (int, error) {
+func ToInt(str string) int {
 	if str == "" {
-		return 0, errors.New("请勿输入空字符串")
+		log.Println("util.ToInt 请勿输入空字符串")
+		return 0
 	}
 
 	i, err := strconv.Atoi(str)
 	if err != nil {
-		return 0, errors.New("(" + str + ")字符串转换数字失败")
+		log.Printf("util.ToInt 字符串(%s)转换数字失败", str)
+		return 0
 	}
 
-	return i, nil
+	return i
 }
 
 // 转化为正整数数字类型
-func ToUint(str string) (uint, error) {
-	i, err := ToInt(str)
+func ToUint(str string) uint {
+	i := ToInt(str)
 
-	return uint(i), err
+	return uint(i)
 }
 
 // 数字转化为字符串

@@ -16,7 +16,7 @@ func NewSignIn() *SignIn {
 
 func GetSignInMonthCount(u_id int, monthday string) int {
 	if monthday == "" {
-		monthday = time.Now().Format("200601")
+		monthday = time.Now().Format("2006-01") + "-01"
 	}
 
 	count := 0

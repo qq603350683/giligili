@@ -40,11 +40,11 @@ func UpdateVideo(c *gin.Context) {
 		return
 	}
 
-	v_id, err := util.ToUint(c.Param("v_id"))
-	if err != nil {
-		serializer.Exit(c, http.StatusOK, "参数错误", err.Error())
-		return
-	}
+	v_id := util.ToUint(c.Param("v_id"))
+	//if err != nil {
+	//	serializer.Exit(c, http.StatusOK, "参数错误", err.Error())
+	//	return
+	//}
 
 	res := m.UpdateVideo(v_id)
 
@@ -53,11 +53,11 @@ func UpdateVideo(c *gin.Context) {
 
 // 删除视频
 func DelVideo(c *gin.Context) {
-	v_id, err := util.ToUint(c.Param("v_id"))
-	if err != nil {
-		serializer.Exit(c, http.StatusOK, "参数错误", err.Error())
-		return
-	}
+	v_id := util.ToUint(c.Param("v_id"))
+	//if err != nil {
+	//	serializer.Exit(c, http.StatusOK, "参数错误", err.Error())
+	//	return
+	//}
 
 	res := service.DelVideo(v_id)
 
@@ -66,11 +66,11 @@ func DelVideo(c *gin.Context) {
 
 // 获取详情
 func GetVideoInfo(c *gin.Context) {
-	v_id, err := util.ToUint(c.Param("v_id"))
-	if err != nil {
-		serializer.Exit(c, http.StatusOK, "参数错误", err.Error())
-		return
-	}
+	v_id := util.ToUint(c.Param("v_id"))
+	//if err != nil {
+	//	serializer.Exit(c, http.StatusOK, "参数错误", err.Error())
+	//	return
+	//}
 
 	res := service.GetVideoInfo(v_id)
 

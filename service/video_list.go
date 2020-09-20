@@ -35,10 +35,10 @@ func GetListVideo(offset uint, limit uint) serializer.JsonResponse {
 	if len(result) > 0 {
 		pipe := client.Pipeline()
 		for _, v := range(result) {
-			i, err := util.ToUint(v.Member.(string))
-			if err != nil {
-				panic(err)
-			}
+			i := util.ToUint(v.Member.(string))
+			//if err != nil {
+			//	panic(err)
+			//}
 
 			v_ids = append(v_ids, i)
 			pipe.Get(cache.VideoInfoKey(i))
