@@ -6,4 +6,7 @@ func Api() {
 	AddRoute("level/get-result", HandlerFunc(GetLevelResult))
 	AddRoute("user", HandlerFunc(GetUserInfo))
 	AddRoute("user/plan/change", HandlerFunc(UserPlanChange))
+
+	AddRoute("backpack/get-list", HandlerFunc(GetBackpackList))
+	AddRoute("backpack/prop/use", HandlerFunc(BackpackPropUse))
 }

@@ -17,7 +17,7 @@ type UserPlan struct {
 }
 
 func NewUserPlan() *UserPlan {
-	user_plan := &UserPlan{}
+	user_plan := new(UserPlan)
 	user_plan.CreatedAt = time.Now()
 
 	return user_plan

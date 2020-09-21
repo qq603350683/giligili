@@ -1,6 +1,7 @@
 package socket
 
 import (
+	"fmt"
 	"giligili/constbase"
 	"giligili/model"
 	"giligili/serializer"
@@ -85,6 +86,8 @@ func SignInCreate(params Params) {
 
 	tx.Commit()
 
-	SendMessage(model.UserInfo.UID, serializer.JsonByte(constbase.SIGN_IN_SUCCESS, "签到成功", sign_in_prize, ""))
+	msg := fmt.Sprintf("本月成功签到%d次", month_count + 1)
+
+	SendMessage(model.UserInfo.UID, serializer.JsonByte(constbase.SIGN_IN_SUCCESS, msg, sign_in_prize, ""))
 	return
 }

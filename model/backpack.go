@@ -85,6 +85,10 @@ func GetBackpacks(u_id int) []Backpack {
 	return backpacks
 }
 
+func (backpack *Backpack) UseDB(db *gorm.DB) *Backpack {
+	DBTransaction = db
+	return backpack
+}
 
 func (backpack *Backpack) Use() bool {
 	if backpack.IsUse == constbase.YES {
@@ -135,29 +139,39 @@ func (backpack *Backpack) OpenGoldPack() (int, bool) {
 		return 0, false
 	}
 
-	var b bool
+	var boolean bool
 	var quantity int
 
 	if backpack.PropDetail.MinQuantity == backpack.PropDetail.MaxQuantity {
 		// 固定金币金额
 		quantity = backpack.PropDetail.MinQuantity
-		b = backpack.PropDetail.AddToUserGold(backpack.PropDetail.MinQuantity)
+		boolean = backpack.PropDetail.AddToUserGold(backpack.PropDetail.MinQuantity)
 	} else {
 		// 随机金币金额
 		rand.Seed(time.Now().Unix())
 		quantity = rand.Intn(backpack.PropDetail.MaxQuantity - backpack.PropDetail.MinQuantity) + backpack.PropDetail.MinQuantity
 
-		b = backpack.PropDetail.AddToUserGold(quantity)
+		boolean = backpack.PropDetail.AddToUserGold(quantity)
 	}
 
-	if b == false {
+	if boolean == false {
 		return 0, false
+	}
+
+	var db *gorm.DB
+
+	if DBTransaction == nil {
+		// 这里是普通业务逻辑
+		db = DB
+	} else{
+		// 这里是事务
+		db = DBTransaction
 	}
 
 	backpack.IsUse = constbase.YES
 	backpack.UseAt = time.Now()
 
-	err := DB.Save(backpack).Error
+	err := db.Save(backpack).Error
 	if err != nil {
 		log.Println(err.Error())
 		return 0, false
@@ -172,29 +186,39 @@ func (backpack *Backpack) OpenDiamondPack() (int, bool) {
 		return 0, false
 	}
 
-	var b bool
+	var boolean bool
 	var quantity int
 
 	if backpack.PropDetail.MinQuantity == backpack.PropDetail.MaxQuantity {
 		// 固定金币金额
 		quantity = backpack.PropDetail.MinQuantity
-		b = backpack.PropDetail.AddToUserDiamond(backpack.PropDetail.MinQuantity)
+		boolean = backpack.PropDetail.AddToUserDiamond(backpack.PropDetail.MinQuantity)
 	} else {
 		// 随机金币金额
 		rand.Seed(time.Now().Unix())
 		quantity = rand.Intn(backpack.PropDetail.MaxQuantity - backpack.PropDetail.MinQuantity) + backpack.PropDetail.MinQuantity
 
-		b = backpack.PropDetail.AddToUserDiamond(quantity)
+		boolean = backpack.PropDetail.AddToUserDiamond(quantity)
 	}
 
-	if b == false {
+	if boolean == false {
 		return 0, false
+	}
+
+	var db *gorm.DB
+
+	if DBTransaction == nil {
+		// 这里是普通业务逻辑
+		db = DB
+	} else{
+		// 这里是事务
+		db = DBTransaction
 	}
 
 	backpack.IsUse = constbase.YES
 	backpack.UseAt = time.Now()
 
-	err := DB.Save(backpack).Error
+	err := db.Save(backpack).Error
 	if err != nil {
 		log.Println(err.Error())
 		return 0, false

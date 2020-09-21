@@ -92,7 +92,7 @@ func InterfaceToString(value interface{}) string {
 		newValue, _ := json.Marshal(value)
 		key = string(newValue)
 	}
-	log.Println(key)
+
 	return key
 }
 

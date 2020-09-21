@@ -2,7 +2,6 @@ package model
 
 import (
 	"giligili/cache"
-	"giligili/constbase"
 	"github.com/jinzhu/gorm"
 	"log"
 	"time"
@@ -164,54 +163,54 @@ func (user *User) GetPassLevelPrize(l_id, gold, diamond int) bool {
 }
 
 // 更换飞机
-func (user *User) ChangePlan(up_id int) bool {
-	if UserInfo.UpID == up_id {
-		return true
-	}
-
-	current_user_plan := GetUserPlanInfo(UserInfo.UpID)
-	if current_user_plan == nil {
-		return false
-	}
-
-	if current_user_plan.UID != UserInfo.UID {
-		return false
-	}
-
-	db := DB.Begin()
-
-	user_plan := GetUserPlanInfo(up_id)
-	if user_plan == nil {
-		db.Rollback()
-		return false
-	}
-
-	if user_plan.UID != UserInfo.UID {
-		db.Rollback()
-		return false
-	}
-
-	res := db.Model(user_plan).Update("is_put_on", constbase.YES)
-	if res.RowsAffected == 0 {
-		db.Rollback()
-		return false
-	}
-
-	res = db.Model(current_user_plan).Update("is_put_on", constbase.NO)
-	if res.RowsAffected == 0 {
-		db.Rollback()
-		return false
-	}
-
-	res = db.Model(UserInfo).Update("up_id", up_id)
-	if res.RowsAffected == 0 {
-		db.Rollback()
-		return false
-	}
-
-	db.Commit()
-
-	UserInfo.Plan = user_plan
-
-	return true
-}
+//func (user *User) ChangePlan(up_id int) bool {
+//	if UserInfo.UpID == up_id {
+//		return true
+//	}
+//
+//	current_user_plan := GetUserPlanInfo(UserInfo.UpID)
+//	if current_user_plan == nil {
+//		return false
+//	}
+//
+//	if current_user_plan.UID != UserInfo.UID {
+//		return false
+//	}
+//
+//	db := DB.Begin()
+//
+//	user_plan := GetUserPlanInfo(up_id)
+//	if user_plan == nil {
+//		db.Rollback()
+//		return false
+//	}
+//
+//	if user_plan.UID != UserInfo.UID {
+//		db.Rollback()
+//		return false
+//	}
+//
+//	res := db.Model(user_plan).Update("is_put_on", constbase.YES)
+//	if res.RowsAffected == 0 {
+//		db.Rollback()
+//		return false
+//	}
+//
+//	res = db.Model(current_user_plan).Update("is_put_on", constbase.NO)
+//	if res.RowsAffected == 0 {
+//		db.Rollback()
+//		return false
+//	}
+//
+//	res = db.Model(UserInfo).Update("up_id", up_id)
+//	if res.RowsAffected == 0 {
+//		db.Rollback()
+//		return false
+//	}
+//
+//	db.Commit()
+//
+//	UserInfo.Plan = user_plan
+//
+//	return true
+//}
