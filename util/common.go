@@ -1,6 +1,7 @@
 package util
 
 import (
+	"encoding/json"
 	"errors"
 	"html"
 	"log"
@@ -12,15 +13,15 @@ import (
 )
 
 // 转化为数字类型
-func ToInt(str string) int {
+func StringToInt(str string) int {
 	if str == "" {
-		log.Println("util.ToInt 请勿输入空字符串")
+		log.Println("util.StringToInt 请勿输入空字符串")
 		return 0
 	}
 
 	i, err := strconv.Atoi(str)
 	if err != nil {
-		log.Printf("util.ToInt 字符串(%s)转换数字失败", str)
+		log.Printf("util.StringToInt 字符串(%s)转换数字失败", str)
 		return 0
 	}
 
@@ -29,7 +30,7 @@ func ToInt(str string) int {
 
 // 转化为正整数数字类型
 func ToUint(str string) uint {
-	i := ToInt(str)
+	i := StringToInt(str)
 
 	return uint(i)
 }
@@ -37,6 +38,62 @@ func ToUint(str string) uint {
 // 数字转化为字符串
 func ToString(i int) string {
 	return strconv.Itoa(i)
+}
+
+// interface 转为 string
+func InterfaceToString(value interface{}) string {
+	var key string
+	if value == nil {
+		return key
+	}
+
+	switch value.(type) {
+	case float64:
+		ft := value.(float64)
+		key = strconv.FormatFloat(ft, 'f', -1, 64)
+	case float32:
+		ft := value.(float32)
+		key = strconv.FormatFloat(float64(ft), 'f', -1, 64)
+	case int:
+		it := value.(int)
+		key = strconv.Itoa(it)
+	case uint:
+		it := value.(uint)
+		key = strconv.Itoa(int(it))
+	case int8:
+		it := value.(int8)
+		key = strconv.Itoa(int(it))
+	case uint8:
+		it := value.(uint8)
+		key = strconv.Itoa(int(it))
+	case int16:
+		it := value.(int16)
+		key = strconv.Itoa(int(it))
+	case uint16:
+		it := value.(uint16)
+		key = strconv.Itoa(int(it))
+	case int32:
+		it := value.(int32)
+		key = strconv.Itoa(int(it))
+	case uint32:
+		it := value.(uint32)
+		key = strconv.Itoa(int(it))
+	case int64:
+		it := value.(int64)
+		key = strconv.FormatInt(it, 10)
+	case uint64:
+		it := value.(uint64)
+		key = strconv.FormatUint(it, 10)
+	case string:
+		key = value.(string)
+	case []byte:
+		key = string(value.([]byte))
+	default:
+		newValue, _ := json.Marshal(value)
+		key = string(newValue)
+	}
+	log.Println(key)
+	return key
 }
 
 // 字符串过滤
@@ -74,13 +131,6 @@ func IsString(data interface{}) bool {
 	}
 
 	return false
-}
-
-// 获取空json结构的[]byte
-func GetEmptyJsonByte() []byte {
-	s := "{xxx}"
-
-	return []byte(s)
 }
 
 // 创建随机字符串

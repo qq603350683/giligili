@@ -199,7 +199,8 @@ func (video *Video) BuildInfoCache() bool {
 		panic("Redis: 连接池获取Redis失败")
 	}
 
-	str := util.GetEmptyJsonByte()
+	//str := util.GetEmptyJsonByte()
+	str := []byte("{}")
 
 	if video.VId > 0 {
 		str, err = json.Marshal(video)

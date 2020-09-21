@@ -19,7 +19,10 @@ type UserPassLevel struct {
 }
 
 func NewUserPassLevel() *UserPassLevel {
-	return &UserPassLevel{}
+	user_pass_level := new(UserPassLevel)
+	user_pass_level.CreatedAt = time.Now()
+
+	return user_pass_level
 }
 
 // 通关记录

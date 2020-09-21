@@ -11,7 +11,7 @@ import (
 )
 
 // 今天签到
-func SignInCreate(params GetParams) {
+func SignInCreate(params Params) {
 	if model.UserInfo.UID == 0 {
 		SendMessage(model.UserInfo.UID, serializer.JsonByte(constbase.SIGN_IN_FAIL, "签到失败", nil, ""))
 		return

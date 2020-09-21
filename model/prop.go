@@ -219,12 +219,6 @@ func (prop *Prop) UseDB(db *gorm.DB) *Prop {
 	return prop
 }
 
-func CancelDB() {
-	if DBTransaction != nil {
-		DBTransaction = nil
-	}
-}
-
 // 道具加入到背包
 func (prop *Prop) AddToBackpack() bool {
 	backpack := NewBackpack()

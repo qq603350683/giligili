@@ -10,13 +10,13 @@ var RedisCache *RedisPool
 // 初始化缓存
 func Init() {
 	str := os.Getenv("REDIS_DB")
-	rDB:= util.ToInt(str)
+	rDB:= util.StringToInt(str)
 	//if err != nil {
 	//	panic(err)
 	//}
 
 	str = os.Getenv("REDIS_POOL_NUM")
-	num := util.ToInt(str)
+	num := util.StringToInt(str)
 	//if err != nil {
 	//	panic(err)
 	//}

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"giligili/model"
 	"giligili/serializer"
+	"giligili/util"
 	"net/http"
 )
 
@@ -15,7 +16,9 @@ type Router struct {
 
 type GetParams map[string]interface{}
 
-type HandlerFunc func(params GetParams)
+type Params map[string]string
+
+type HandlerFunc func(params Params)
 
 type GetMessage struct {
 	Case string `json:"case"`
@@ -36,7 +39,13 @@ func HandleGetMessage(msg []byte) {
 		return
 	}
 
-	Routes[message.Case].f(message.Params)
+	params := make(Params)
+
+	for index, value := range(message.Params) {
+		params[index] = util.InterfaceToString(value)
+	}
+
+	Routes[message.Case].f(params)
 }
 
 func AddRoute(url string, f HandlerFunc) {

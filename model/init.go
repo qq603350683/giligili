@@ -45,3 +45,10 @@ func Database(connString string) {
 
 	migration()
 }
+
+
+func CancelDB() {
+	if DBTransaction != nil {
+		DBTransaction = nil
+	}
+}
