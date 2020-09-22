@@ -44,9 +44,11 @@ func NewPropUse() *PropUse {
 }
 
 func GetMyBackpackInfo(p_id int) *Backpack {
+	db := GetDB()
+
 	backpack := &Backpack{}
 
-	err := DB.Where("u_id = ? AND p_id = ? AND is_use = 0", UserInfo.UID, p_id).First(backpack).Error
+	err := db.Where("u_id = ? AND p_id = ? AND is_use = 0", UserInfo.UID, p_id).First(backpack).Error
 	if err != nil {
 		if err != gorm.ErrRecordNotFound {
 			log.Println(err.Error())
@@ -58,15 +60,17 @@ func GetMyBackpackInfo(p_id int) *Backpack {
 }
 
 func GetBackpacks(u_id int) []Backpack {
+	db := GetDB()
+
 	var backpacks []Backpack
 
-	err := DB.Where("u_id = ? AND is_use = 0", u_id).Limit(1).Find(&backpacks).Error
+	err := db.Where("u_id = ? AND is_use = 0", u_id).Limit(1).Find(&backpacks).Error
 	if err != nil {
 		log.Println(err.Error())
 		return nil
 	}
 
-	err = DB.Raw("SELECT *, COUNT(*) as quantity FROM backpacks WHERE u_id = ? AND is_use = 0 GROUP BY p_id", u_id).Find(&backpacks).Error
+	err = db.Raw("SELECT *, COUNT(*) as quantity FROM backpacks WHERE u_id = ? AND is_use = 0 GROUP BY p_id", u_id).Find(&backpacks).Error
 	if err != nil {
 		log.Println(err.Error())
 		return nil
@@ -85,11 +89,6 @@ func GetBackpacks(u_id int) []Backpack {
 	return backpacks
 }
 
-func (backpack *Backpack) UseDB(db *gorm.DB) *Backpack {
-	DBTransaction = db
-	return backpack
-}
-
 func (backpack *Backpack) Use() bool {
 	if backpack.IsUse == constbase.YES {
 		return false
@@ -99,10 +98,12 @@ func (backpack *Backpack) Use() bool {
 		backpack.PropDetail = GetPropInfo(backpack.PID)
 	}
 
+	db := GetDB()
+
 	backpack.IsUse = constbase.YES
 	backpack.UseAt = time.Time{}
 
-	err := DB.Save(backpack).Error
+	err := db.Save(backpack).Error
 	if err != nil {
 		log.Println(err.Error())
 		return false
@@ -121,7 +122,9 @@ func (backpack *Backpack) Sell() bool {
 		return false
 	}
 
-	res := DB.Model(backpack).Where("is_use = 0 AND is_sell = 0").UpdateColumns(map[string]interface{} {
+	db := GetDB()
+
+	res := db.Model(backpack).Where("is_use = 0 AND is_sell = 0").UpdateColumns(map[string]interface{} {
 		"is_use": constbase.YES,
 		"is_sell": constbase.YES,
 		"use_at": time.Now(),
@@ -158,15 +161,7 @@ func (backpack *Backpack) OpenGoldPack() (int, bool) {
 		return 0, false
 	}
 
-	var db *gorm.DB
-
-	if DBTransaction == nil {
-		// 这里是普通业务逻辑
-		db = DB
-	} else{
-		// 这里是事务
-		db = DBTransaction
-	}
+	db := GetDB()
 
 	backpack.IsUse = constbase.YES
 	backpack.UseAt = time.Now()
@@ -205,15 +200,7 @@ func (backpack *Backpack) OpenDiamondPack() (int, bool) {
 		return 0, false
 	}
 
-	var db *gorm.DB
-
-	if DBTransaction == nil {
-		// 这里是普通业务逻辑
-		db = DB
-	} else{
-		// 这里是事务
-		db = DBTransaction
-	}
+	db := GetDB()
 
 	backpack.IsUse = constbase.YES
 	backpack.UseAt = time.Now()
@@ -281,7 +268,9 @@ func (backpack *Backpack) UseBulletEnhancer(up_id int, id int) (bool, bool) {
 
 		plan.DetailJson = string(str)
 
-		err = DB.Save(plan).Error
+		db := GetDB()
+
+		err = db.Save(plan).Error
 		if err != nil {
 			log.Println(err.Error())
 			return enhancer_result, false
@@ -330,6 +319,8 @@ func (backpack *Backpack) UseBulletSpeedEnhancer(up_id int, id int) (bool, bool)
 		return enhancer_result, false
 	}
 
+
+
 	if enhancer_result == true {
 		// 强化成功
 		bullet.Speed += 1
@@ -343,7 +334,9 @@ func (backpack *Backpack) UseBulletSpeedEnhancer(up_id int, id int) (bool, bool)
 
 		plan.DetailJson = string(str)
 
-		err = DB.Save(plan).Error
+		db := GetDB()
+
+		err = db.Save(plan).Error
 		if err != nil {
 			log.Println(err.Error())
 			return enhancer_result, false
@@ -405,7 +398,9 @@ func (backpack *Backpack) UseBulletRateEnhancer(up_id int, id int) (bool, bool) 
 
 		plan.DetailJson = string(str)
 
-		err = DB.Save(plan).Error
+		db := GetDB()
+
+		err = db.Save(plan).Error
 		if err != nil {
 			log.Println(err.Error())
 			return enhancer_result, false
@@ -470,7 +465,9 @@ func (backpack *Backpack) UseSkillEnhancer(up_id int, id int) (bool, bool) {
 
 		plan.DetailJson = string(str)
 
-		err = DB.Save(plan).Error
+		db := GetDB()
+
+		err = db.Save(plan).Error
 		if err != nil {
 			log.Println(err.Error())
 			return enhancer_result, false
@@ -532,7 +529,9 @@ func (backpack *Backpack) UseSkillSpeedEnhancer(up_id int, id int) (bool, bool) 
 
 		plan.DetailJson = string(str)
 
-		err = DB.Save(plan).Error
+		db := GetDB()
+
+		err = db.Save(plan).Error
 		if err != nil {
 			log.Println(err.Error())
 			return enhancer_result, false
@@ -594,7 +593,9 @@ func (backpack *Backpack) UseSkillRateEnhancer(up_id int, id int) (bool, bool) {
 
 		plan.DetailJson = string(str)
 
-		err = DB.Save(plan).Error
+		db := GetDB()
+
+		err = db.Save(plan).Error
 		if err != nil {
 			log.Println(err.Error())
 			return enhancer_result, false

@@ -214,11 +214,6 @@ func GetSpeedEnhancerIsSuccess(t string, speed int) bool {
 	}
 }
 
-func (prop *Prop) UseDB(db *gorm.DB) *Prop {
-	DBTransaction = db
-	return prop
-}
-
 // 道具加入到背包
 func (prop *Prop) AddToBackpack() bool {
 	backpack := NewBackpack()
@@ -226,18 +221,9 @@ func (prop *Prop) AddToBackpack() bool {
 	backpack.UID = UserInfo.UID
 	backpack.PID = prop.PID
 
-	var db *gorm.DB
-	var err error
+	db := GetDB()
 
-	if DBTransaction == nil {
-		// 这里是普通业务逻辑
-		db = DB
-	} else{
-		// 这里是事务
-		db = DBTransaction
-	}
-
-	if err = db.Create(backpack).Error; err != nil {
+	if err := db.Create(backpack).Error; err != nil {
 		log.Printf("用户ID(%d)道具领取失败", UserInfo.UID)
 		return false
 	}
@@ -247,15 +233,7 @@ func (prop *Prop) AddToBackpack() bool {
 
 // 增加金币金额
 func (prop *Prop) AddToUserGold(quantity int) bool {
-	var db *gorm.DB
-
-	if DBTransaction == nil {
-		// 这里是普通业务逻辑
-		db = DB
-	} else{
-		// 这里是事务
-		db = DBTransaction
-	}
+	db := GetDB()
 
 	res := db.Model(UserInfo).Where("gold = ?", UserInfo.Gold).Update("gold", UserInfo.Gold + quantity)
 	if res.RowsAffected == 0 {
@@ -268,15 +246,7 @@ func (prop *Prop) AddToUserGold(quantity int) bool {
 
 // 增加钻石
 func (prop *Prop) AddToUserDiamond(quantity int) bool {
-	var db *gorm.DB
-
-	if DBTransaction == nil {
-		// 这里是普通业务逻辑
-		db = DB
-	} else{
-		// 这里是事务
-		db = DBTransaction
-	}
+	db := GetDB()
 
 	res := db.Model(UserInfo).Where("diamond = ?", UserInfo.Diamond).Update("diamond", UserInfo.Diamond + quantity)
 	if res.RowsAffected == 0 {

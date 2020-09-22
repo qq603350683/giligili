@@ -44,7 +44,7 @@ func CreateSignIn(u_id int) (int, []byte) {
 
 	sign_in_prize := model.GetSignInPrize(u_id, month_count + 1, "")
 	if sign_in_prize != nil {
-		if boolean = sign_in_prize.PorpDetail.UseDB(tx).AddToBackpack(); boolean == false {
+		if boolean = sign_in_prize.PorpDetail.AddToBackpack(); boolean == false {
 			tx.Rollback()
 			return u_id, serializer.JsonByte(constbase.SIGN_IN_FAIL, "签到失败", nil, "")
 		}

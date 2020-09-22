@@ -45,7 +45,9 @@ func UserPlanChange(params Params) {
 		return
 	}
 
-	db := model.DB.Begin()
+	db := model.DBBegin()
+
+	defer model.CancelDB()
 
 	res := db.Model(user_plan).Update("is_put_on", constbase.YES)
 	if res.RowsAffected == 0 {

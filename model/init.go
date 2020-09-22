@@ -68,6 +68,7 @@ func GetDB() *gorm.DB {
 
 // 开启事物并获取 DB
 func DBBegin() *gorm.DB {
+	log.Println("DB Begin")
 	DBTransaction = DB.Begin()
 	return DBTransaction
 }
