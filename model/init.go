@@ -4,6 +4,7 @@ import (
 	"giligili/util"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"log"
 	"time"
 )
 
@@ -46,9 +47,27 @@ func Database(connString string) {
 	migration()
 }
 
-
+// 取消 DB 事物句柄
 func CancelDB() {
 	if DBTransaction != nil {
 		DBTransaction = nil
+		log.Println("DBTransaction 清空成功！")
 	}
+}
+
+// 获取 DB 句柄
+func GetDB() *gorm.DB {
+	if DBTransaction != nil {
+		log.Println("DBTransaction 获取成功！")
+		return DBTransaction
+	} else {
+		log.Println("DB 获取成功！")
+		return DB
+	}
+}
+
+// 开启事物并获取 DB
+func DBBegin() *gorm.DB {
+	DBTransaction = DB.Begin()
+	return DBTransaction
 }

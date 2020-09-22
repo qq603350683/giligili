@@ -54,12 +54,6 @@ func GetUserInfo(u_id int) *User {
 	return user
 }
 
-// 开启了事物的DB
-func (user *User) UseDB(db *gorm.DB) *User {
-	DBTransaction = db
-	return user
-}
-
 // 判断今天是否已经转发， 每个用户记录一次
 func (user *User) TodayIsForward() bool {
 	key := cache.UserTodayForwardListKey()
@@ -137,17 +131,7 @@ func (user *User) GetPassLevelPrize(l_id, gold, diamond int) bool {
 		new_l_id = l_id
 	}
 
-	var db *gorm.DB
-
-	if DBTransaction == nil {
-		// 这里是普通业务逻辑
-		db = DB
-	} else{
-		// 这里是事务
-		db = DBTransaction
-	}
-
-	defer CancelDB()
+	db := GetDB()
 
 	res := db.Model(UserInfo).Where("gold = ? AND diamond = ? AND l_id = ?", UserInfo.Gold, UserInfo.Diamond, UserInfo.LID).Update(map[string]int{
 		"l_id": new_l_id,

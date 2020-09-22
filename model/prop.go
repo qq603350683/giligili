@@ -237,8 +237,6 @@ func (prop *Prop) AddToBackpack() bool {
 		db = DBTransaction
 	}
 
-	defer CancelDB()
-
 	if err = db.Create(backpack).Error; err != nil {
 		log.Printf("用户ID(%d)道具领取失败", UserInfo.UID)
 		return false
@@ -258,8 +256,6 @@ func (prop *Prop) AddToUserGold(quantity int) bool {
 		// 这里是事务
 		db = DBTransaction
 	}
-
-	defer CancelDB()
 
 	res := db.Model(UserInfo).Where("gold = ?", UserInfo.Gold).Update("gold", UserInfo.Gold + quantity)
 	if res.RowsAffected == 0 {
@@ -281,8 +277,6 @@ func (prop *Prop) AddToUserDiamond(quantity int) bool {
 		// 这里是事务
 		db = DBTransaction
 	}
-
-	defer CancelDB()
 
 	res := db.Model(UserInfo).Where("diamond = ?", UserInfo.Diamond).Update("diamond", UserInfo.Diamond + quantity)
 	if res.RowsAffected == 0 {

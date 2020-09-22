@@ -45,7 +45,9 @@ func GetLevelResult(params Params) {
 		return
 	}
 
-	db := model.DB.Begin()
+	db := model.DBBegin()
+
+	defer model.CancelDB()
 
 	// 通关成功领取的奖励
 	if is_success == constbase.YES {
@@ -59,7 +61,7 @@ func GetLevelResult(params Params) {
 			gold = 100
 			diamond = 1
 
-			boolean = model.UserInfo.UseDB(db).GetPassLevelPrize(l_id, gold, diamond)
+			boolean = model.UserInfo.GetPassLevelPrize(l_id, gold, diamond)
 			if boolean == false {
 				db.Rollback()
 				SendMessage(model.UserInfo.UID, serializer.JsonByte(http.StatusInternalServerError, "系统繁忙", nil, "奖励领取失败"))
