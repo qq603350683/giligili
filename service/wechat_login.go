@@ -89,7 +89,7 @@ func WechantLogin(code string) *WechatLoginResult {
 		user_plan := model.NewUserPlan()
 		user_plan.UID = user.UID
 		user_plan.IsPutOn = constbase.YES
-		user_plan.DetailJson = `{"name": "初代战神", "w":129,"h":120,"texture":"hero/hero2.png","bullets":[{"id":1,"title":"A导弹","w":20,"h":20,"p":3,"a":0,"level":1,"max_level":3,"rate":50,"max_rate":45,"speed":10,"max_speed":8,"texture":"bullet/10.png"}],"skills":[{"id":1,"title":"光速射线","w":50,"h":50,"p":1,"a":0,"level":2,"max_level":4,"rate":180,"max_rate":175,"speed":50,"max_speed":60,"height":9999999,"texture":"bullet/skill1.png"}]}`
+		user_plan.DetailJson = `{"name": "初代战神", "w":129,"h":120,"texture":"hero/hero2.png","bullets":[{"id":1,"title":"A导弹","w":20,"h":20,"p":3,"a":0,"level":1,"max_level":3,"rate":50,"max_rate":45,"speed":10,"max_speed":15,"texture":"bullet/10.png"}],"skills":[{"id":1,"title":"光速射线","w":50,"h":50,"p":1,"a":0,"level":2,"max_level":4,"rate":180,"max_rate":175,"speed":50,"max_speed":60,"height":9999999,"texture":"bullet/skill1.png"}]}`
 		if err = db.Create(user_plan).Error; err != nil {
 			db.Rollback()
 			log.Println(err.Error())

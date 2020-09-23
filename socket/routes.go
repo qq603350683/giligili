@@ -21,8 +21,8 @@ type Params map[string]string
 type HandlerFunc func(params Params)
 
 type GetMessage struct {
-	Case string `json:"case"`
-	Params GetParams `json:"content"`
+	Url string `json:"url"`
+	Params GetParams `json:"params"`
 }
 
 func HandleGetMessage(msg []byte) {
@@ -34,8 +34,8 @@ func HandleGetMessage(msg []byte) {
 		return
 	}
 
-	if _, ok := Routes[message.Case]; !ok {
-		SendMessage(model.UserInfo.UID, serializer.JsonByte(http.StatusInternalServerError, "系统繁忙", nil, "不存在此路由"))
+	if _, ok := Routes[message.Url]; !ok {
+		SendMessage(model.UserInfo.UID, serializer.JsonByte(http.StatusInternalServerError, "系统繁忙", nil, "不存在此路由" + message.Url))
 		return
 	}
 
@@ -47,7 +47,7 @@ func HandleGetMessage(msg []byte) {
 
 	model.UserInfo = model.GetUserInfo(model.UserInfo.UID)
 
-	Routes[message.Case].f(params)
+	Routes[message.Url].f(params)
 }
 
 func AddRoute(url string, f HandlerFunc) {
