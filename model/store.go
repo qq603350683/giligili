@@ -24,10 +24,19 @@ type Store struct {
 }
 
 // 获取商店列表
-func GetStoreList() []Store {
+func GetStoreList(typ string) []Store {
+	var err error
 	var stores []Store
 
-	err := DB.Where("del_at = ? AND is_shelf = ?", DelAtDefault, constbase.YES).Order("sort desc, s_id desc").Find(&stores).Error
+	switch typ {
+	case constbase.PROP_TYPE_GOLD:
+		err = DB.Where("del_at = ? AND is_shelf = ? AND gold > 0", DelAtDefault, constbase.YES).Order("sort desc, s_id desc").Find(&stores).Error
+	case constbase.PROP_TYPE_DIAMOND:
+		err = DB.Where("del_at = ? AND is_shelf = ? AND diamond > 0", DelAtDefault, constbase.YES).Order("sort desc, s_id desc").Find(&stores).Error
+	default:
+		err = DB.Where("del_at = ? AND is_shelf = ?", DelAtDefault, constbase.YES).Order("sort desc, s_id desc").Find(&stores).Error
+	}
+
 	if err != nil {
 		log.Println(err.Error())
 		return nil
@@ -72,7 +81,9 @@ func GetSroteInfo(s_id int) *Store {
 
 // 卖出个数 + 1
 func (store Store) SellIncr() bool{
-	res := DB.Model(store).Where("sell = ?", store.Sell).Update("sell", store.Sell + 1)
+	db := GetDB()
+
+	res := db.Model(store).Where("sell = ?", store.Sell).Update("sell", store.Sell + 1)
 	if res.RowsAffected == 0 {
 		return false
 	}
@@ -81,7 +92,7 @@ func (store Store) SellIncr() bool{
 }
 
 // 兑换道具 有金币优先用金币兑换，没有则用钻石兑换
-func (store Store) Change() bool {
+func (store Store) Buy() bool {
 	if store.IsShelf != constbase.YES {
 		log.Printf("商店(%d) 已下架", store.SID)
 		return false
@@ -92,6 +103,8 @@ func (store Store) Change() bool {
 		return false
 	}
 
+	db := GetDB()
+
 	user := GetUserInfo(UserInfo.UID)
 
 	if store.Gold > 0 {
@@ -100,7 +113,7 @@ func (store Store) Change() bool {
 			return false
 		}
 
-		res := DB.Model(&user).Where("gold = ?", user.Gold).Update("gold", user.Gold - store.Gold)
+		res := db.Model(&user).Where("gold = ?", user.Gold).Update("gold", user.Gold - store.Gold)
 		if res.RowsAffected == 0 {
 			log.Println("更新数据失败")
 			return false
@@ -112,7 +125,7 @@ func (store Store) Change() bool {
 			return false
 		}
 
-		res := DB.Model(&user).Where("diamond = ?", user.Diamond).Update("diamond", user.Diamond - store.Diamond)
+		res := db.Model(&user).Where("diamond = ?", user.Diamond).Update("diamond", user.Diamond - store.Diamond)
 		if res.RowsAffected == 0 {
 			log.Println("更新数据失败")
 			return false
@@ -122,13 +135,13 @@ func (store Store) Change() bool {
 		return false
 	}
 
-	b := store.SellIncr()
-	if b == false {
+	boolean := store.SellIncr()
+	if boolean == false {
 		return false
 	}
 
-	b = store.PorpDetail.AddToBackpack()
-	if b == false {
+	boolean = store.PorpDetail.AddToBackpack()
+	if boolean == false {
 		return false
 	}
 

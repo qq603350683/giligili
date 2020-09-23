@@ -147,64 +147,58 @@ func GetSpeedEnhancerIsSuccess(t string, speed int) bool {
 		return false
 	}
 
-	if speed <= 5 {
+	if speed <= 10 {
 		return true
-	} else if speed > 5 && speed <= 10 {
+	} else if speed > 10 && speed <= 20 {
+		if i <= 90 {
+			return true
+		} else {
+			return false
+		}
+	} else if speed > 20 && speed <= 30 {
 		if i <= 80 {
 			return true
 		} else {
 			return false
 		}
-	} else if speed > 10 && speed <= 15 {
+	} else if speed > 30 && speed <= 40 {
+		if i <= 70 {
+			return true
+		} else {
+			return false
+		}
+	} else if speed > 40 && speed <= 50 {
 		if i <= 60 {
 			return true
 		} else {
 			return false
 		}
-	} else if speed > 15 && speed <= 20 {
+	} else if speed > 50 && speed <= 60 {
+		if i <= 50 {
+			return true
+		} else {
+			return false
+		}
+	} else if speed > 60 && speed <= 70 {
 		if i <= 40 {
 			return true
 		} else {
 			return false
 		}
-	} else if speed > 20 && speed <= 23 {
+	} else if speed > 70 && speed <= 80 {
 		if i <= 30 {
 			return true
 		} else {
 			return false
 		}
-	} else if speed == 24 {
-		if i <= 20 {
-			return true
-		} else {
-			return false
-		}
-	} else if speed == 25 {
-		if i <= 17 {
-			return true
-		} else {
-			return false
-		}
-	} else if speed == 26 {
-		if i <= 15 {
-			return true
-		} else {
-			return false
-		}
-	} else if speed == 27 {
-		if i <= 13 {
-			return true
-		} else {
-			return false
-		}
-	} else if speed == 28 {
-		if i <= 12 {
-			return true
-		} else {
-			return false
-		}
-	} else if speed == 29 {
+	} else if speed > 80 && speed <= 90 {
 		if i <= 10 {
+			return true
+		} else {
+			return false
+		}
+	} else if speed > 90 && speed <= 99 {
+		if i <= 5 {
 			return true
 		} else {
 			return false
@@ -212,6 +206,180 @@ func GetSpeedEnhancerIsSuccess(t string, speed int) bool {
 	} else {
 		return false
 	}
+
+	return false
+}
+
+func GetBulletRateEnhancerIsSuccess(t string, rate int) bool {
+	rand.Seed(time.Now().Unix())
+	i := rand.Intn(100)
+
+	if t == "" {
+		return false
+	}
+
+	if rate >= 180 {
+		return true
+	} else if rate > 170 && rate <= 180 {
+		if i <= 95 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 160 && rate <= 170 {
+		if i <= 90 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 150 && rate <= 160 {
+		if i <= 85 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 140 && rate <= 150 {
+		if i <= 80 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 130 && rate <= 140 {
+		if i <= 75 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 120 && rate <= 130 {
+		if i <= 70 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 110 && rate <= 120 {
+		if i <= 65 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 100 && rate <= 110 {
+		if i <= 60 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 90 && rate <= 100 {
+		if i <= 50 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 80 && rate <= 90 {
+		if i <= 40 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 70 && rate <= 80 {
+		if i <= 30 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 60 && rate <= 70 {
+		if i <= 20 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 55 && rate <= 60 {
+		if i <= 10 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 50 && rate <= 55 {
+		if i <= 10 {
+			return true
+		} else {
+			return false
+		}
+	}
+
+	return false
+}
+
+func GetSkillRateEnhancerIsSuccess(t string, rate int) bool {
+	rand.Seed(time.Now().Unix())
+	i := rand.Intn(100)
+
+	if t == "" {
+		return false
+	}
+
+	if rate <= 100 {
+		return false
+	} else if rate > 100 && rate <= 110 {
+		if i >= 95 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 110 && rate <= 120 {
+		if i >= 80 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 120 && rate <= 130 {
+		if i >= 70 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 130 && rate <= 140 {
+		if i >= 60 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 140 && rate <= 150 {
+		if i >= 50 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 150 && rate <= 160 {
+		if i >= 40 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 160 && rate <= 170 {
+		if i >= 30 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 170 && rate <= 180 {
+		if i >= 20 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 180 && rate <= 190 {
+		if i >= 10 {
+			return true
+		} else {
+			return false
+		}
+	} else if rate > 190 {
+		return true
+	} else {
+		return false
+	}
+
+	return false
 }
 
 // 道具加入到背包

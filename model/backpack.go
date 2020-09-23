@@ -124,7 +124,7 @@ func (backpack *Backpack) Sell() bool {
 
 	db := GetDB()
 
-	res := db.Model(backpack).Where("is_use = 0 AND is_sell = 0").UpdateColumns(map[string]interface{} {
+	res := db.Model(backpack).Where("is_use = 0 AND is_sell = 0").Updates(map[string]interface{} {
 		"is_use": constbase.YES,
 		"is_sell": constbase.YES,
 		"use_at": time.Now(),
@@ -163,12 +163,11 @@ func (backpack *Backpack) OpenGoldPack() (int, bool) {
 
 	db := GetDB()
 
-	backpack.IsUse = constbase.YES
-	backpack.UseAt = time.Now()
-
-	err := db.Save(backpack).Error
-	if err != nil {
-		log.Println(err.Error())
+	res := db.Model(backpack).Updates(map[string]interface{}{
+		"use_at": time.Now(),
+		"is_use": constbase.YES,
+	})
+	if res.RowsAffected == 0 {
 		return 0, false
 	}
 
@@ -202,12 +201,11 @@ func (backpack *Backpack) OpenDiamondPack() (int, bool) {
 
 	db := GetDB()
 
-	backpack.IsUse = constbase.YES
-	backpack.UseAt = time.Now()
-
-	err := db.Save(backpack).Error
-	if err != nil {
-		log.Println(err.Error())
+	res := db.Model(backpack).Updates(map[string]interface{}{
+		"use_at": time.Now(),
+		"is_use": constbase.YES,
+	})
+	if res.RowsAffected == 0 {
 		return 0, false
 	}
 
@@ -255,6 +253,8 @@ func (backpack *Backpack) UseBulletEnhancer(up_id int, id int) (bool, bool) {
 
 	enhancer_result = GetBulletEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Level)
 
+	db := GetDB()
+
 	if enhancer_result == true {
 		// 强化成功
 		bullet.Level += 1
@@ -268,13 +268,23 @@ func (backpack *Backpack) UseBulletEnhancer(up_id int, id int) (bool, bool) {
 
 		plan.DetailJson = string(str)
 
-		db := GetDB()
-
 		err = db.Save(plan).Error
 		if err != nil {
 			log.Println(err.Error())
 			return enhancer_result, false
 		}
+
+		if UserInfo.UpID == up_id {
+			UserInfo.Plan = plan
+		}
+	}
+
+	res := db.Model(backpack).Updates(map[string]interface{}{
+		"use_at": time.Now(),
+		"is_use": constbase.YES,
+	})
+	if res.RowsAffected == 0 {
+		return enhancer_result, false
 	}
 
 	return enhancer_result, true
@@ -319,7 +329,7 @@ func (backpack *Backpack) UseBulletSpeedEnhancer(up_id int, id int) (bool, bool)
 		return enhancer_result, false
 	}
 
-
+	db := GetDB()
 
 	if enhancer_result == true {
 		// 强化成功
@@ -334,13 +344,23 @@ func (backpack *Backpack) UseBulletSpeedEnhancer(up_id int, id int) (bool, bool)
 
 		plan.DetailJson = string(str)
 
-		db := GetDB()
-
 		err = db.Save(plan).Error
 		if err != nil {
 			log.Println(err.Error())
 			return enhancer_result, false
 		}
+
+		if UserInfo.UpID == up_id {
+			UserInfo.Plan = plan
+		}
+	}
+
+	res := db.Model(backpack).Updates(map[string]interface{}{
+		"use_at": time.Now(),
+		"is_use": constbase.YES,
+	})
+	if res.RowsAffected == 0 {
+		return enhancer_result, false
 	}
 
 	return enhancer_result, true
@@ -383,7 +403,9 @@ func (backpack *Backpack) UseBulletRateEnhancer(up_id int, id int) (bool, bool) 
 		return enhancer_result, false
 	}
 
-	enhancer_result = GetSpeedEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Speed)
+	enhancer_result = GetBulletRateEnhancerIsSuccess(backpack.PropDetail.Type, bullet.Rate)
+
+	db := GetDB()
 
 	if enhancer_result == true {
 		// 强化成功
@@ -398,13 +420,23 @@ func (backpack *Backpack) UseBulletRateEnhancer(up_id int, id int) (bool, bool) 
 
 		plan.DetailJson = string(str)
 
-		db := GetDB()
-
 		err = db.Save(plan).Error
 		if err != nil {
 			log.Println(err.Error())
 			return enhancer_result, false
 		}
+
+		if UserInfo.UpID == up_id {
+			UserInfo.Plan = plan
+		}
+	}
+
+	res := db.Model(backpack).Updates(map[string]interface{}{
+		"use_at": time.Now(),
+		"is_use": constbase.YES,
+	})
+	if res.RowsAffected == 0 {
+		return enhancer_result, false
 	}
 
 	return enhancer_result, true
@@ -452,6 +484,8 @@ func (backpack *Backpack) UseSkillEnhancer(up_id int, id int) (bool, bool) {
 
 	enhancer_result = GetBulletEnhancerIsSuccess(backpack.PropDetail.Type, skill.Level)
 
+	db := GetDB()
+
 	if enhancer_result == true {
 		// 强化成功
 		skill.Level += 1
@@ -465,13 +499,23 @@ func (backpack *Backpack) UseSkillEnhancer(up_id int, id int) (bool, bool) {
 
 		plan.DetailJson = string(str)
 
-		db := GetDB()
-
 		err = db.Save(plan).Error
 		if err != nil {
 			log.Println(err.Error())
 			return enhancer_result, false
 		}
+
+		if UserInfo.UpID == up_id {
+			UserInfo.Plan = plan
+		}
+	}
+
+	res := db.Model(backpack).Updates(map[string]interface{}{
+		"use_at": time.Now(),
+		"is_use": constbase.YES,
+	})
+	if res.RowsAffected == 0 {
+		return enhancer_result, false
 	}
 
 	return enhancer_result, true
@@ -516,6 +560,8 @@ func (backpack *Backpack) UseSkillSpeedEnhancer(up_id int, id int) (bool, bool) 
 
 	enhancer_result = GetSpeedEnhancerIsSuccess(backpack.PropDetail.Type, skill.Speed)
 
+	db := GetDB()
+
 	if enhancer_result == true {
 		// 强化成功
 		skill.Speed += 1
@@ -529,8 +575,6 @@ func (backpack *Backpack) UseSkillSpeedEnhancer(up_id int, id int) (bool, bool) 
 
 		plan.DetailJson = string(str)
 
-		db := GetDB()
-
 		err = db.Save(plan).Error
 		if err != nil {
 			log.Println(err.Error())
@@ -538,10 +582,18 @@ func (backpack *Backpack) UseSkillSpeedEnhancer(up_id int, id int) (bool, bool) 
 		}
 	}
 
+	res := db.Model(backpack).Updates(map[string]interface{}{
+		"use_at": time.Now(),
+		"is_use": constbase.YES,
+	})
+	if res.RowsAffected == 0 {
+		return enhancer_result, false
+	}
+
 	return enhancer_result, true
 }
 
-// 子弹射频强化器
+// 技能射频强化器
 func (backpack *Backpack) UseSkillRateEnhancer(up_id int, id int) (bool, bool) {
 	enhancer_result := false
 
@@ -578,7 +630,9 @@ func (backpack *Backpack) UseSkillRateEnhancer(up_id int, id int) (bool, bool) {
 		return enhancer_result, false
 	}
 
-	enhancer_result = GetSpeedEnhancerIsSuccess(backpack.PropDetail.Type, skill.Speed)
+	enhancer_result = GetSkillRateEnhancerIsSuccess(backpack.PropDetail.Type, skill.Rate)
+
+	db := GetDB()
 
 	if enhancer_result == true {
 		// 强化成功
@@ -593,13 +647,19 @@ func (backpack *Backpack) UseSkillRateEnhancer(up_id int, id int) (bool, bool) {
 
 		plan.DetailJson = string(str)
 
-		db := GetDB()
-
 		err = db.Save(plan).Error
 		if err != nil {
 			log.Println(err.Error())
 			return enhancer_result, false
 		}
+	}
+
+	res := db.Model(backpack).Updates(map[string]interface{}{
+		"use_at": time.Now(),
+		"is_use": constbase.YES,
+	})
+	if res.RowsAffected == 0 {
+		return enhancer_result, false
 	}
 
 	return enhancer_result, true

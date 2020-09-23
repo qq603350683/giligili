@@ -45,6 +45,8 @@ func HandleGetMessage(msg []byte) {
 		params[index] = util.InterfaceToString(value)
 	}
 
+	model.UserInfo = model.GetUserInfo(model.UserInfo.UID)
+
 	Routes[message.Case].f(params)
 }
 

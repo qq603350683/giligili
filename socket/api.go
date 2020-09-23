@@ -9,4 +9,9 @@ func Api() {
 
 	AddRoute("backpack/get-list", HandlerFunc(GetBackpackList))
 	AddRoute("backpack/prop/use", HandlerFunc(BackpackPropUse))
+
+	AddRoute("backpack/prop/sell", HandlerFunc(BackpackPropSell))
+
+	AddRoute("store/get-list", HandlerFunc(GetStoreList))
+	AddRoute("store/buy", HandlerFunc(StoreBuy))
 }

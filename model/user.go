@@ -14,6 +14,7 @@ type User struct {
 	Diamond int `json:"diamond" gorm:"column:diamond;type:int(10) unsigned; not null; default:0; comment:'钻石'"`
 	LID int `json:"l_id" gorm:"column:l_id;type:int(10) unsigned; not null; default:0; comment:'最高通关级别'"`
 	Plan *UserPlan `json:"plan" comment:"飞机详情"`
+	LoginedAt time.Time `json:"logined_at" gorm:"type:datetime;not null;default:'1000-01-01 00:00:00'; comment:'最近一次时间'"`
 	CreatedAt time.Time `json:"created_at" gorm:"type:datetime;not null; comment:'创建时间'"`
 	UpdatedAt time.Time `json:"-" gorm:"type:datetime;not null; comment:'更新时间'"`
 	DelAt time.Time `json:"-" gorm:"type:datetime;not null;default:'1000-01-01 00:00:00'; comment:'删除时间'"`
@@ -24,6 +25,11 @@ func NewUser() *User {
 	user.CreatedAt = time.Now()
 
 	return user
+}
+
+// 更新最后一次登录时间
+func (user *User) UpdateLoginedAt() {
+	DB.Model(user).Update("logined_at", time.Now())
 }
 
 // 获取用户详情
@@ -107,12 +113,13 @@ func (user *User) GoldAndDiamondIncr(gold, diamond int) bool {
 		return false
 	}
 
-	res := DB.Model(UserInfo).Where("gold = ? AND diamond = ?", UserInfo.Gold, UserInfo.Diamond).Update(map[string]int{
+	res := DB.Model(UserInfo).Where("gold = ? AND diamond = ?", UserInfo.Gold, UserInfo.Diamond).Updates(map[string]int{
 		"gold": UserInfo.Gold + gold,
 		"diamond": UserInfo.Diamond + diamond,
 	})
 
 	if res.RowsAffected == 0 {
+		log.Println("更新数据失败")
 		return false
 	}
 
@@ -133,13 +140,14 @@ func (user *User) GetPassLevelPrize(l_id, gold, diamond int) bool {
 
 	db := GetDB()
 
-	res := db.Model(UserInfo).Where("gold = ? AND diamond = ? AND l_id = ?", UserInfo.Gold, UserInfo.Diamond, UserInfo.LID).Update(map[string]int{
+	res := db.Model(UserInfo).Where("gold = ? AND diamond = ? AND l_id = ?", UserInfo.Gold, UserInfo.Diamond, UserInfo.LID).Updates(map[string]int{
 		"l_id": new_l_id,
 		"gold": UserInfo.Gold + gold,
 		"diamond": UserInfo.Diamond + diamond,
 	})
 
 	if res.RowsAffected == 0 {
+		log.Println("更新数据失败")
 		return false
 	}
 

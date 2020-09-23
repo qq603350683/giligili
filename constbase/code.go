@@ -51,5 +51,14 @@ const (
 	// 背包列表
 	BACKPACK_LIST = 238
 
+
+	// 商店列表
+	STORE_LIST = 239
+	// 商店道具兑换
+	STORE_BUY_SUCCESS = 240
+
+	BACKPACK_SELL_SUCCESS = 241
+	BACKPACK_SELL_FAIL = 242
+
 	CHAT_MESSAGE = 250
 )

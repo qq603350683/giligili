@@ -113,9 +113,10 @@ func Run() {
 
 			WebsocketConns.Connects[u_id] = conn
 
-			user := model.GetUserInfo(u_id)
+			model.UserInfo = new(model.User)
+			model.UserInfo.UID = u_id
 
-			model.UserInfo = user
+			model.UserInfo.UpdateLoginedAt()
 
 			for {
 				mtype, content, err := conn.ReadMessage()

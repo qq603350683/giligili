@@ -3,7 +3,7 @@ package service
 import "giligili/model"
 
 func GetStoreList() []model.Store {
-	stores := model.GetStoreList()
+	stores := model.GetStoreList("")
 
 	return stores
 }

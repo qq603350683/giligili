@@ -5,9 +5,7 @@ import (
 	"giligili/model"
 	"giligili/serializer"
 	"giligili/util"
-	"log"
 	"net/http"
-	"time"
 )
 
 type PropUseResult struct {
@@ -111,24 +109,17 @@ func BackpackPropUse(params Params) {
 		return
 	}
 
+	db.Commit()
+
 	if enhancer_result == true {
 		result.EnhancerlResult = constbase.ENHANCER_SUCCESS
-		result.Plan = model.GetUserPlanInfo(up_id)
 	} else {
 		result.EnhancerlResult = constbase.ENHANCER_FAIL
 	}
-	log.Println(backpack)
-	res := db.Model(backpack).Update(map[string]interface{}{
-		"use_at": time.Now(),
-		"is_use": constbase.YES,
-	})
-	if res.RowsAffected == 0 {
-		db.Rollback()
-		SendMessage(model.UserInfo.UID, serializer.JsonByte(http.StatusInternalServerError, "系统繁忙", nil, "socket.BackpackPropUse 异常004"))
-		return
-	}
 
-	db.Commit()
+	if up_id > 0 {
+		result.Plan = model.GetUserPlanInfo(up_id)
+	}
 
 	SendMessage(model.UserInfo.UID, serializer.JsonByte(constbase.ENHANCER_RESULT, "success", result, ""))
 

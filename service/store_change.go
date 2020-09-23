@@ -20,7 +20,7 @@ func StoreChange(s_id int) bool {
 
 	db :=model.DB.Begin()
 
-	b := store.Change()
+	b := store.Buy()
 
 	if b == false {
 		db.Rollback()

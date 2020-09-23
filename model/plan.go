@@ -12,7 +12,7 @@ type Plan struct {
 
 // 飞机详情 包括普通子弹 技能等信息
 type PlanDetail struct {
-	Name string `json:"-" comment:"名字"`
+	Name string `json:"name" comment:"名字"`
 	Width int `json:"w" comment:"宽度"`
 	Height int `json:"h" comment:"高度"`
 	Texture string `json:"texture" comment:"飞机图片"`
