@@ -16,6 +16,7 @@ type Store struct {
 	Diamond int `json:"diamond" gorm:"column:diamond;type:int(10) unsigned;not null;default:0;comment:'道具所需的钻石价值'"`
 	Quantity int `json:"quantity" gorm:"column:quantity;type:int(10) unsigned;not null;default:0;comment:'道具个数'"`
 	PorpDetail *Prop `json:"prop" comment:"道具详情"`
+	PlanDetail *Plan `json:"plan" comment:"飞机详情"`
 	Sell int `json:"-" gorm:"column:sell;type:int(10) unsigned;not null;default:0;comment:'卖出数量'"`
 	Sort int `json:"-" gorm:"column:sort;type:int(10) unsigned;not null;default:0;comment:'排序'"`
 	IsShelf int8 `json:"-" gorm:"column:is_shelf;type:tinyint(1) unsigned;not null;default:0;comment:'是否上架 0 - 下架 1 - 上架'"`
@@ -30,9 +31,14 @@ func GetStoreList(typ string) []Store {
 
 	switch typ {
 	case constbase.PROP_TYPE_GOLD:
-		err = DB.Where("del_at = ? AND is_shelf = ? AND gold > 0", DelAtDefault, constbase.YES).Order("sort desc, s_id desc").Find(&stores).Error
+		// 金币商品
+		err = DB.Where("del_at = ? AND is_shelf = ? AND gold > 0 AND plan_id = 0", DelAtDefault, constbase.YES).Order("sort desc, s_id desc").Find(&stores).Error
 	case constbase.PROP_TYPE_DIAMOND:
-		err = DB.Where("del_at = ? AND is_shelf = ? AND diamond > 0", DelAtDefault, constbase.YES).Order("sort desc, s_id desc").Find(&stores).Error
+		// 钻石商品
+		err = DB.Where("del_at = ? AND is_shelf = ? AND diamond > 0 AND plan_id = 0", DelAtDefault, constbase.YES).Order("sort desc, s_id desc").Find(&stores).Error
+	case constbase.PLAN:
+		// 飞机
+		err = DB.Where("del_at = ? AND is_shelf = ? AND plan_id > 0", DelAtDefault, constbase.YES).Order("sort desc, s_id desc").Find(&stores).Error
 	default:
 		err = DB.Where("del_at = ? AND is_shelf = ?", DelAtDefault, constbase.YES).Order("sort desc, s_id desc").Find(&stores).Error
 	}
@@ -47,7 +53,13 @@ func GetStoreList(typ string) []Store {
 	}
 
 	for index, store := range(stores) {
-		store.PorpDetail = GetPropInfo(store.PID)
+		if store.PID > 0 {
+			store.PorpDetail = GetPropInfo(store.PID)
+		}
+
+		if store.PlanID > 0 {
+			store.PlanDetail = GetPlanInfo(store.PlanID)
+		}
 
 		stores[index] = store
 	}
@@ -140,8 +152,18 @@ func (store Store) Buy() bool {
 		return false
 	}
 
-	boolean = store.PorpDetail.AddToBackpack()
-	if boolean == false {
+	if store.PID > 0 {
+		boolean = store.PorpDetail.AddToBackpack()
+		if boolean == false {
+			return false
+		}
+	} else if store.PlanID > 0 {
+		boolean = store.PlanDetail.AddToUserPlan()
+		if boolean == false {
+			return false
+		}
+	} else {
+		log.Println("商品 p_id 与 plan_id 都为 0")
 		return false
 	}
 

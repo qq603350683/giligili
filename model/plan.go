@@ -1,6 +1,11 @@
 package model
 
-import "time"
+import (
+	"encoding/json"
+	"github.com/jinzhu/gorm"
+	"log"
+	"time"
+)
 
 type Plan struct {
 	PID int `json:"p_id" gorm:"column:p_id; type:int(10) unsigned auto_increment; not null; primary_key"`
@@ -53,4 +58,65 @@ type Skill struct {
 	MaxSpeed int `json:"max_speed" comment:"最大速度"`
 	MaxHeight int `json:"height" comment:"技能最长长度"`
 	Texture string `json:"texture" comment:"技能图片"`
+}
+
+func NewPlan() *Plan {
+	plan := new(Plan)
+
+	return plan
+}
+
+func GetPlanInfo(p_id int) *Plan {
+	if p_id == 0 {
+		return nil
+	}
+
+	plan := NewPlan()
+
+	err := DB.Where("p_id = ?", p_id).First(plan).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			log.Printf("飞机ID(%d)找不到记录: ", p_id)
+		} else {
+			log.Println(err.Error())
+		}
+		return nil
+	}
+
+	if IsDel(plan.DelAt) {
+		log.Printf("飞机ID(%d)已删除: ", p_id)
+		return nil
+	}
+
+	// 完善飞机信息
+	err = json.Unmarshal([]byte(plan.DetailJson), &plan.Detail)
+	if err != nil {
+		log.Printf("飞机信息 json 解析字段 detail 失败 p_id: %d, 失败详情: %s", p_id, err.Error())
+		return nil
+	}
+
+	return plan
+}
+
+// 添加到我的飞机里面
+func (plan *Plan) AddToUserPlan() bool {
+	var err error
+
+	user_plan := NewUserPlan()
+
+	detail_json, err := json.Marshal(plan.Detail)
+
+	user_plan.UID = UserInfo.UID
+	user_plan.DetailJson = string(detail_json)
+	user_plan.CreatedAt = time.Now()
+
+	db := GetDB()
+
+	err = db.Create(user_plan).Error
+	if err != nil {
+		log.Println(err.Error())
+		return false
+	}
+
+	return true
 }

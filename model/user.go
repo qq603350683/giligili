@@ -38,7 +38,7 @@ func GetUserInfo(u_id int) *User {
 		return nil
 	}
 
-	user := &User{}
+	user := NewUser()
 
 	err := DB.Where("u_id = ?", u_id).First(user).Error
 	if err != nil {
