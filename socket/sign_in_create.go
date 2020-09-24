@@ -11,6 +11,16 @@ import (
 	"time"
 )
 
+type SignInResult struct {
+	SignInPrize *model.SignInPrize `json:"sign_in_prize"`
+	UserGold int `json:"user_gold"`
+	DiamondGold int `json:"user_diamond"`
+}
+
+func NewSignInResult() *SignInResult {
+	return new(SignInResult)
+}
+
 // 今天签到
 func SignInCreate(params Params) {
 	if model.UserInfo.UID == 0 {
@@ -82,8 +92,13 @@ func SignInCreate(params Params) {
 
 	db.Commit()
 
+	sign_in_result := NewSignInResult()
+	sign_in_result.SignInPrize = sign_in_prize
+	sign_in_result.UserGold = model.UserInfo.Gold
+	sign_in_result.DiamondGold = model.UserInfo.Diamond
+
 	msg := fmt.Sprintf("本月成功签到%d次", month_count + 1)
 
-	SendMessage(model.UserInfo.UID, serializer.JsonByte(constbase.SIGN_IN_SUCCESS, msg, sign_in_prize, ""))
+	SendMessage(model.UserInfo.UID, serializer.JsonByte(constbase.SIGN_IN_SUCCESS, msg, sign_in_result, ""))
 	return
 }
