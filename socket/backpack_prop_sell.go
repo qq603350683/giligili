@@ -11,6 +11,8 @@ import (
 type PropSellResult struct {
 	Type string `json:"type"`
 	Quantity int `json:"quantity"`
+	UserGold int `json:"user_gold"`
+	UserDiamond int `json:"user_diamond"`
 }
 
 func NewPropSellResult() *PropSellResult {
@@ -76,6 +78,9 @@ func BackpackPropSell(params Params) {
 	}
 
 	db.Commit()
+
+	prop_sell_result.UserGold = model.UserInfo.Gold
+	prop_sell_result.UserDiamond = model.UserInfo.Diamond
 
 	SendMessage(model.UserInfo.UID, serializer.JsonByte(constbase.BACKPACK_SELL_SUCCESS, "success", prop_sell_result, ""))
 }
