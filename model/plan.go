@@ -37,7 +37,7 @@ type Bullet struct {
 	BaseLevel int `json:"base_level" comment:"初始攻击力"`
 	MaxLevel int `json:"max_level" comment:"最大攻击力"`
 	Rate int `json:"rate" comment:"射频"`
-	BaseRate int `json:"rate" comment:"初始射频"`
+	BaseRate int `json:"base_rate" comment:"初始射频"`
 	MaxRate int `json:"max_rate" comment:"最大射频"`
 	Speed int `json:"speed" comment:"速度"`
 	BaseSpeed int `json:"base_speed" comment:"初始速度"`
@@ -57,7 +57,7 @@ type Skill struct {
 	BaseLevel int `json:"base_level" comment:"初始攻击力"`
 	MaxLevel int `json:"max_level" comment:"最大攻击力"`
 	Rate int `json:"rate" comment:"频率"`
-	BaseRate int `json:"rate" comment:"初始射频"`
+	BaseRate int `json:"base_rate" comment:"初始射频"`
 	MaxRate int `json:"max_rate" comment:"最大射频"`
 	Speed int `json:"speed" comment:"速度"`
 	BaseSpeed int `json:"base_speed" comment:"初始速度"`
