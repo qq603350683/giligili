@@ -86,7 +86,12 @@ func GetSroteInfo(s_id int) *Store {
 		return nil
 	}
 
-	store.PorpDetail = GetPropInfo(store.PID)
+	if store.PID > 0 {
+		store.PorpDetail = GetPropInfo(store.PID)
+	} else if store.PlanID > 0 {
+		store.PlanDetail = GetPlanInfo(store.PlanID)
+	}
+
 
 	return store
 }

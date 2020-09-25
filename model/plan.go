@@ -34,10 +34,13 @@ type Bullet struct {
 	Position int8 `json:"p" comment:"位置"`
 	Angle int8 `json:"a" comment:"角度"`
 	Level int `json:"level" comment:"攻击力"`
+	BaseLevel int `json:"base_level" comment:"初始攻击力"`
 	MaxLevel int `json:"max_level" comment:"最大攻击力"`
 	Rate int `json:"rate" comment:"射频"`
+	BaseRate int `json:"rate" comment:"初始射频"`
 	MaxRate int `json:"max_rate" comment:"最大射频"`
 	Speed int `json:"speed" comment:"速度"`
+	BaseSpeed int `json:"base_speed" comment:"初始速度"`
 	MaxSpeed int `json:"max_speed" comment:"最大速度"`
 	Texture string `json:"texture" comment:"子弹图片"`
 }
@@ -51,10 +54,13 @@ type Skill struct {
 	Position int8 `json:"p" comment:"位置"`
 	Angle int8 `json:"a" comment:"角度"`
 	Level int `json:"level" comment:"攻击力"`
+	BaseLevel int `json:"base_level" comment:"初始攻击力"`
 	MaxLevel int `json:"max_level" comment:"最大攻击力"`
 	Rate int `json:"rate" comment:"频率"`
+	BaseRate int `json:"rate" comment:"初始射频"`
 	MaxRate int `json:"max_rate" comment:"最大射频"`
 	Speed int `json:"speed" comment:"速度"`
+	BaseSpeed int `json:"base_speed" comment:"初始速度"`
 	MaxSpeed int `json:"max_speed" comment:"最大速度"`
 	MaxHeight int `json:"height" comment:"技能最长长度"`
 	Texture string `json:"texture" comment:"技能图片"`
@@ -100,15 +106,21 @@ func GetPlanInfo(p_id int) *Plan {
 
 // 添加到我的飞机里面
 func (plan *Plan) AddToUserPlan() bool {
+	if plan == nil {
+		log.Println("model.AddToUserPlan plan is nil")
+		return false
+	}
+
 	var err error
 
 	user_plan := NewUserPlan()
 
-	detail_json, err := json.Marshal(plan.Detail)
-
+	//detail_json, err := json.Marshal(&)
 	user_plan.UID = UserInfo.UID
-	user_plan.DetailJson = string(detail_json)
+	user_plan.DetailJson = plan.DetailJson
 	user_plan.CreatedAt = time.Now()
+
+	log.Println(user_plan)
 
 	db := GetDB()
 
