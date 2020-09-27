@@ -70,7 +70,7 @@ func GetBackpacks(u_id int) []Backpack {
 		return nil
 	}
 
-	err = db.Raw("SELECT *, COUNT(*) as quantity FROM backpacks WHERE u_id = ? AND is_use = 0 GROUP BY p_id", u_id).Find(&backpacks).Error
+	err = db.Raw("SELECT p_id, COUNT(*) as quantity FROM backpacks WHERE u_id = ? AND is_use = 0 GROUP BY p_id", u_id).Find(&backpacks).Error
 	if err != nil {
 		log.Println(err.Error())
 		return nil
