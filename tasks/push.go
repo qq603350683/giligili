@@ -25,8 +25,14 @@ func SendFakeMessage() {
 	log.Println("开始假消息推送")
 	time.Sleep(time.Second * 2)
 
-	nicknames := [...]string{"a", "b", "c", "d", "e", "f", "g", "h", "i"}
-	l := len(nicknames)
+	tips := [...]string{
+		"首次签到即可免费领取500钻石",
+		"商店仅需500钻石购买2020飞行号",
+		"在商店购买强化器可以强化子弹哦",
+		"背包点击强化器即可强化子弹与技能",
+		"子弹越强病毒消灭越快哦",
+	}
+	l := len(tips)
 
 	c := make(chan bool, 1)
 
@@ -47,12 +53,12 @@ func SendFakeMessage() {
 
 			i = rand.Intn(l - 1)
 
-			nickname := nicknames[i]
+			tip := tips[i]
 
-			content := nickname + " is on line"
+			//content := nickname + " is on line"
 
 			fake_message := FakeMessage{
-				Content:   content,
+				Content:   tip,
 				CreatedAt: time.Now().Format(util.DATETIME),
 			}
 
