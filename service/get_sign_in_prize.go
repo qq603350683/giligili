@@ -43,20 +43,20 @@ func GetGrandTotalPrize(total int) *model.SignInPrize {
 		return nil
 	}
 
-	sign_in_prize.PorpDetail = model.GetPropInfo(sign_in_prize.PID)
+	sign_in_prize.PropDetail = model.GetPropInfo(sign_in_prize.PID)
 
 	db := model.DB.Begin()
 
 	b := false
 
 	// 添加到背包
-	switch sign_in_prize.PorpDetail.Type {
+	switch sign_in_prize.PropDetail.Type {
 	case constbase.PROP_TYPE_GOLD:
-		b = sign_in_prize.PorpDetail.AddToUserGold(sign_in_prize.Quantity)
+		b = sign_in_prize.PropDetail.AddToUserGold(sign_in_prize.Quantity)
 	case constbase.PROP_TYPE_DIAMOND:
-		b = sign_in_prize.PorpDetail.AddToUserDiamond(sign_in_prize.Quantity)
+		b = sign_in_prize.PropDetail.AddToUserDiamond(sign_in_prize.Quantity)
 	default:
-		b = sign_in_prize.PorpDetail.AddToBackpack()
+		b = sign_in_prize.PropDetail.AddToBackpack()
 	}
 
 	if b == false {

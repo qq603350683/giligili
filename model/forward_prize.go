@@ -9,7 +9,7 @@ import (
 type ForwardPrize struct {
 	FpID int `json:"fp_id" gorm:"column:fp_id;type:int(10) unsigned auto_increment;not null;primary_key;comment:'转发奖品ID'"`
 	PID int `json:"p_id" gorm:"column:p_id;type:int(10) unsigned;not null;default:0;comment:'道具ID 来自 prop 表的 p_id'"`
-	PorpDetail *Prop `json:"prop" comment:"道具详情"`
+	PropDetail *Prop `json:"prop" comment:"道具详情"`
 	IsOpen int8 `json:"is_open" gorm:"column:is_open;type:tinyint(3) unsigned;not null;default:0;comment'是否开启分享奖励 0 - 不开启 1 - 开启'"`
 }
 
@@ -41,7 +41,7 @@ func GetForwardPrize() *Prop {
 		return nil
 	}
 
-	fp.PorpDetail = prop
+	fp.PropDetail = prop
 
 	return prop
 }

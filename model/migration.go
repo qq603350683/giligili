@@ -92,6 +92,12 @@ func migration() {
 		DB.Set("gorm:table_options", set).CreateTable(&WechatUser{})
 	}
 
+	if DB.HasTable(&UserSharePrize{}) {
+		DB.AutoMigrate(&UserSharePrize{})
+	} else {
+		DB.Set("gorm:table_options", set).CreateTable(&UserSharePrize{})
+	}
+
 	//DB.AutoMigrate(&User{})
 	//DB.AutoMigrate(&UserToken{})
 	//DB.AutoMigrate(&Level{})

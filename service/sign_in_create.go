@@ -44,7 +44,7 @@ func CreateSignIn(u_id int) (int, []byte) {
 
 	sign_in_prize := model.GetSignInPrize(u_id, month_count + 1, "")
 	if sign_in_prize != nil {
-		if boolean = sign_in_prize.PorpDetail.AddToBackpack(); boolean == false {
+		if boolean = sign_in_prize.PropDetail.AddToBackpack(); boolean == false {
 			tx.Rollback()
 			return u_id, serializer.JsonByte(constbase.SIGN_IN_FAIL, "签到失败", nil, "")
 		}
@@ -52,13 +52,13 @@ func CreateSignIn(u_id int) (int, []byte) {
 		//return u_id, serializer.JsonByte(constbase.SIGN_IN_FAIL, "签到失败", nil, "")
 
 		// 添加到背包
-		//switch sign_in_prize.PorpDetail.Type {
+		//switch sign_in_prize.PropDetail.Type {
 		//case constbase.PROP_TYPE_GOLD:
-		//	b = sign_in_prize.PorpDetail.AddToUserGold(sign_in_prize.Quantity)
+		//	b = sign_in_prize.PropDetail.AddToUserGold(sign_in_prize.Quantity)
 		//case constbase.PROP_TYPE_DIAMOND:
-		//	b = sign_in_prize.PorpDetail.AddToUserDiamond(sign_in_prize.Quantity)
+		//	b = sign_in_prize.PropDetail.AddToUserDiamond(sign_in_prize.Quantity)
 		//default:
-		//	b = sign_in_prize.PorpDetail.AddToBackpack()
+		//	b = sign_in_prize.PropDetail.AddToBackpack()
 		//}
 
 	} else {

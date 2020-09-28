@@ -2,6 +2,7 @@ package socket
 
 func Api() {
 	AddRoute("sign_in/create", HandlerFunc(SignInCreate))
+	AddRoute("share/create", HandlerFunc(ShareCreate))
 	AddRoute("level/get-info", HandlerFunc(GetLevelInfo))
 	AddRoute("level/get-result", HandlerFunc(GetLevelResult))
 	AddRoute("user", HandlerFunc(GetUserInfo))
@@ -14,4 +15,6 @@ func Api() {
 
 	AddRoute("store/get-list", HandlerFunc(GetStoreList))
 	AddRoute("store/buy", HandlerFunc(StoreBuy))
+
+
 }

@@ -1,7 +1,6 @@
 package model
 
 import (
-	"giligili/cache"
 	"github.com/jinzhu/gorm"
 	"log"
 	"time"
@@ -61,51 +60,51 @@ func GetUserInfo(u_id int) *User {
 }
 
 // 判断今天是否已经转发， 每个用户记录一次
-func (user *User) TodayIsForward() bool {
-	key := cache.UserTodayForwardListKey()
-
-	client, err := cache.RedisCache.Get()
-	if err != nil {
-		log.Printf("Redis 获取失败")
-		return false
-	}
-
-	res, err := client.SIsMember(key, user.UID).Result()
-	if err != nil {
-		log.Printf(err.Error())
-		return false
-	}
-
-	if res == true {
-		return true
-	}
-
-	return false
-}
-
-// 转发
-func (user *User) TodayForward() bool {
-	key := cache.UserTodayForwardListKey()
-
-	client, err := cache.RedisCache.Get()
-	if err != nil {
-		log.Printf("Redis 获取失败")
-		return false
-	}
-
-	i, err := client.SAdd(key, user.UID).Result()
-	if err != nil {
-		log.Printf("Redis: %s", err.Error())
-		return false
-	}
-
-	if i != 1 {
-		log.Printf("Redis: i 的值非 1")
-		return false
-	}
-
-	return true
-}
+//func (user *User) TodayIsForward() bool {
+//	key := cache.UserTodayForwardListKey()
+//
+//	client, err := cache.RedisCache.Get()
+//	if err != nil {
+//		log.Printf("Redis 获取失败")
+//		return false
+//	}
+//
+//	res, err := client.SIsMember(key, user.UID).Result()
+//	if err != nil {
+//		log.Printf(err.Error())
+//		return false
+//	}
+//
+//	if res == true {
+//		return true
+//	}
+//
+//	return false
+//}
+//
+//// 转发
+//func (user *User) TodayForward() bool {
+//	key := cache.UserTodayForwardListKey()
+//
+//	client, err := cache.RedisCache.Get()
+//	if err != nil {
+//		log.Printf("Redis 获取失败")
+//		return false
+//	}
+//
+//	i, err := client.SAdd(key, user.UID).Result()
+//	if err != nil {
+//		log.Printf("Redis: %s", err.Error())
+//		return false
+//	}
+//
+//	if i != 1 {
+//		log.Printf("Redis: i 的值非 1")
+//		return false
+//	}
+//
+//	return true
+//}
 
 // 金币和钻石都增加
 func (user *User) GoldAndDiamondIncr(gold, diamond int) bool {

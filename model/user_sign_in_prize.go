@@ -9,7 +9,7 @@ type UserSignInPrize struct {
 	Time string `json:"time" gorm:"column:time;type:char(6);not null;default:'';index:idx_time;comment:'年月'"`
 	GrandTotal int8 `json:"grand_total" gorm:"column:grand_total;type:tinyint(3);not null;default:0;comment:'累计天数'"`
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at; type:datetime; not null; comment:'创建时间'"`
-	PorpDetail *Prop `json:"prop" gorm:"-" comment:"道具详情"`
+	PropDetail *Prop `json:"prop" gorm:"-" comment:"道具详情"`
 }
 
 func NewUserSignInPrize() *UserSignInPrize {

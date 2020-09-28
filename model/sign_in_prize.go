@@ -12,7 +12,7 @@ type SignInPrize struct {
 	Quantity int `json:"quantity" gorm:"column:quantity;type:int(10);not null;default:0;comment:'个数'"`
 	Time string `json:"time" gorm:"column:time;type:char(6);not null;default:'';index:idx_time;comment:'年月'"`
 	GrandTotal int8 `json:"grand_total" gorm:"column:grand_total;type:tinyint(3);not null;default:0;comment:'累计天数'"`
-	PorpDetail *Prop `json:"prop" gorm:"-" comment:"道具详情"`
+	PropDetail *Prop `json:"prop" gorm:"-" comment:"道具详情"`
 }
 
 func NewSignInPrize() *SignInPrize {
@@ -52,7 +52,7 @@ func GetSignInPrize(u_id int, total int, monthday string) *SignInPrize {
 		return nil
 	}
 
-	sign_in_prize.PorpDetail = GetPropInfo(sign_in_prize.PID)
+	sign_in_prize.PropDetail = GetPropInfo(sign_in_prize.PID)
 
 	return sign_in_prize
 }

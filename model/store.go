@@ -15,7 +15,7 @@ type Store struct {
 	Gold int `json:"gold" gorm:"column:gold;type:int(10) unsigned;not null;default:0;comment:'道具所需的金币价值'"`
 	Diamond int `json:"diamond" gorm:"column:diamond;type:int(10) unsigned;not null;default:0;comment:'道具所需的钻石价值'"`
 	Quantity int `json:"quantity" gorm:"column:quantity;type:int(10) unsigned;not null;default:0;comment:'道具个数'"`
-	PorpDetail *Prop `json:"prop" comment:"道具详情"`
+	PropDetail *Prop `json:"prop" comment:"道具详情"`
 	PlanDetail *Plan `json:"plan" comment:"飞机详情"`
 	Sell int `json:"-" gorm:"column:sell;type:int(10) unsigned;not null;default:0;comment:'卖出数量'"`
 	Sort int `json:"-" gorm:"column:sort;type:int(10) unsigned;not null;default:0;comment:'排序'"`
@@ -54,7 +54,7 @@ func GetStoreList(typ string) []Store {
 
 	for index, store := range(stores) {
 		if store.PID > 0 {
-			store.PorpDetail = GetPropInfo(store.PID)
+			store.PropDetail = GetPropInfo(store.PID)
 		}
 
 		if store.PlanID > 0 {
@@ -87,7 +87,7 @@ func GetSroteInfo(s_id int) *Store {
 	}
 
 	if store.PID > 0 {
-		store.PorpDetail = GetPropInfo(store.PID)
+		store.PropDetail = GetPropInfo(store.PID)
 	} else if store.PlanID > 0 {
 		store.PlanDetail = GetPlanInfo(store.PlanID)
 	}
@@ -158,7 +158,7 @@ func (store Store) Buy() bool {
 	}
 
 	if store.PID > 0 {
-		boolean = store.PorpDetail.AddToBackpack()
+		boolean = store.PropDetail.AddToBackpack()
 		if boolean == false {
 			return false
 		}

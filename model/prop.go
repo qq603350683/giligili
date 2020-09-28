@@ -71,6 +71,8 @@ func GetPropInfoByType(_type string) *Prop {
 }
 
 func GetBulletEnhancerIsSuccess(t string, level int) bool {
+	return true
+
 	rand.Seed(time.Now().Unix())
 	i := rand.Intn(100)
 
@@ -140,6 +142,8 @@ func GetBulletEnhancerIsSuccess(t string, level int) bool {
 }
 
 func GetSpeedEnhancerIsSuccess(t string, speed int) bool {
+	return true
+
 	rand.Seed(time.Now().Unix())
 	i := rand.Intn(100)
 
@@ -211,6 +215,8 @@ func GetSpeedEnhancerIsSuccess(t string, speed int) bool {
 }
 
 func GetBulletRateEnhancerIsSuccess(t string, rate int) bool {
+	return true
+
 	rand.Seed(time.Now().Unix())
 	i := rand.Intn(100)
 
@@ -310,6 +316,8 @@ func GetBulletRateEnhancerIsSuccess(t string, rate int) bool {
 }
 
 func GetSkillRateEnhancerIsSuccess(t string, rate int) bool {
+	return true
+
 	rand.Seed(time.Now().Unix())
 	i := rand.Intn(100)
 

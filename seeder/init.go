@@ -7,4 +7,5 @@ func Run() {
 	PropRun()
 	StoreRun()
 	SignInPrizeRun()
+	SignInPrizeRun202010()
 }
