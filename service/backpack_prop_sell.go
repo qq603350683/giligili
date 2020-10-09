@@ -48,7 +48,7 @@ func BackpackPropSell(p_id int) *PropSellResult {
 		PropSellResult.Type = constbase.PROP_TYPE_GOLD
 		PropSellResult.Quantity = prop.GoldValue
 
-		b := model.UserInfo.GoldAndDiamondIncr(prop.GoldValue, 0)
+		b := model.UserInfo.GoldAndDiamondUpdate(prop.GoldValue, 0)
 		if b == false {
 			db.Rollback()
 			return nil
@@ -57,7 +57,7 @@ func BackpackPropSell(p_id int) *PropSellResult {
 		PropSellResult.Type = constbase.PROP_TYPE_DIAMOND
 		PropSellResult.Quantity = prop.DiamondValue
 
-		b := model.UserInfo.GoldAndDiamondIncr(0, prop.DiamondValue)
+		b := model.UserInfo.GoldAndDiamondUpdate(0, prop.DiamondValue)
 		if b == false {
 			db.Rollback()
 			return nil

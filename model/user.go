@@ -107,7 +107,7 @@ func GetUserInfo(u_id int) *User {
 //}
 
 // 金币和钻石都增加
-func (user *User) GoldAndDiamondIncr(gold, diamond int) bool {
+func (user *User) GoldAndDiamondUpdate(gold, diamond int) bool {
 	if gold + diamond == 0 {
 		return false
 	}

@@ -59,7 +59,7 @@ func GetLevelResult(params Params) {
 
 		if count < 5 {
 			gold = 100
-			diamond = 1
+			diamond = 10
 
 			boolean = model.UserInfo.GetPassLevelPrize(l_id, gold, diamond)
 			if boolean == false {

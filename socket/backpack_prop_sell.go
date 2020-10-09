@@ -59,7 +59,7 @@ func BackpackPropSell(params Params) {
 		prop_sell_result.Type = constbase.PROP_TYPE_GOLD
 		prop_sell_result.Quantity = prop.GoldValue
 
-		boolean = model.UserInfo.GoldAndDiamondIncr(prop.GoldValue, 0)
+		boolean = model.UserInfo.GoldAndDiamondUpdate(prop.GoldValue, 0)
 		if boolean == false {
 			db.Rollback()
 			SendMessage(model.UserInfo.UID, serializer.JsonByte(constbase.BACKPACK_SELL_FAIL, "出售失败", nil, "socket.BackpackPropSell 道具出售失败"))
@@ -69,7 +69,7 @@ func BackpackPropSell(params Params) {
 		prop_sell_result.Type = constbase.PROP_TYPE_DIAMOND
 		prop_sell_result.Quantity = prop.DiamondValue
 
-		boolean = model.UserInfo.GoldAndDiamondIncr(0, prop.DiamondValue)
+		boolean = model.UserInfo.GoldAndDiamondUpdate(0, prop.DiamondValue)
 		if boolean == false {
 			db.Rollback()
 			SendMessage(model.UserInfo.UID, serializer.JsonByte(constbase.BACKPACK_SELL_FAIL, "出售失败", nil, "socket.BackpackPropSell 道具出售失败"))
