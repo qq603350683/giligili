@@ -3,12 +3,23 @@ package socket
 import (
 	"encoding/json"
 	"fmt"
+	"giligili/constbase"
 	"giligili/model"
 	"giligili/serializer"
 	"giligili/util"
 	"log"
 	"net/http"
 )
+
+type UserPlanUpgrade struct {
+	Gold int `json:"gold"`
+	Diamond int `json:"diamond"`
+	UserPlan *model.UserPlan `json:"user_plan"`
+}
+
+func NewUserPlanUpgrade() *UserPlanUpgrade {
+	return new(UserPlanUpgrade)
+}
 
 func UserPlanUpgradeBulletLevel(params Params) {
 	id := 0
@@ -102,5 +113,10 @@ func UserPlanUpgradeBulletLevel(params Params) {
 		model.UserInfo.Plan = user_plan
 	}
 
-	SendMessage(model.UserInfo.UID, serializer.JsonByte(http.StatusOK, "升级成功", model.UserInfo.Plan, ""))
+	user_plan_upgrade := NewUserPlanUpgrade()
+	user_plan_upgrade.Gold = model.UserInfo.Gold
+	user_plan_upgrade.Diamond = model.UserInfo.Diamond
+	user_plan_upgrade.UserPlan = user_plan
+
+	SendMessage(model.UserInfo.UID, serializer.JsonByte(constbase.USER_PLAN_UPGRADE_SUCCESS, "升级成功", user_plan_upgrade, ""))
 }

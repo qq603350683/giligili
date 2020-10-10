@@ -3,6 +3,7 @@ package socket
 import (
 	"encoding/json"
 	"fmt"
+	"giligili/constbase"
 	"giligili/model"
 	"giligili/serializer"
 	"giligili/util"
@@ -102,5 +103,10 @@ func UserPlanUpgradeBulletRate(params Params) {
 		model.UserInfo.Plan = user_plan
 	}
 
-	SendMessage(model.UserInfo.UID, serializer.JsonByte(http.StatusOK, "升级成功", model.UserInfo.Plan, ""))
+	user_plan_upgrade := NewUserPlanUpgrade()
+	user_plan_upgrade.Gold = model.UserInfo.Gold
+	user_plan_upgrade.Diamond = model.UserInfo.Diamond
+	user_plan_upgrade.UserPlan = user_plan
+
+	SendMessage(model.UserInfo.UID, serializer.JsonByte(constbase.USER_PLAN_UPGRADE_SUCCESS, "升级成功", user_plan_upgrade, ""))
 }
