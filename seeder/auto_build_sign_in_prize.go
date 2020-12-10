@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"giligili/model"
 	"log"
+	"time"
 )
 
-func SignInPrizeRun202010() {
+// 自动创建每个月的奖励
+func AutoBuildSignInPrize() {
 	sign_in_prizes := []model.SignInPrize{}
 
-	err := model.DB.Where("time = ?", 202010).Find(&sign_in_prizes).Error
+	t := time.Now().Format("200601")
+
+	err := model.DB.Where("time = ?", t).Find(&sign_in_prizes).Error
 	if err != nil {
 		log.Println(err.Error())
 		return
@@ -18,8 +22,6 @@ func SignInPrizeRun202010() {
 	if len(sign_in_prizes) > 0 {
 		return
 	}
-
-	t := "202010"
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        2,
@@ -43,112 +45,112 @@ func SignInPrizeRun202010() {
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
-		PID:        2,
+		PID:        1,
 		Quantity:   500,
 		Time:       t,
 		GrandTotal: 4,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
-		PID:        2,
-		Quantity:   500,
+		PID:        1,
+		Quantity:   600,
 		Time:       t,
 		GrandTotal: 5,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
-		PID:        2,
-		Quantity:   500,
+		PID:        1,
+		Quantity:   700,
 		Time:       t,
 		GrandTotal: 6,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
-		PID:        2,
-		Quantity:   500,
+		PID:        1,
+		Quantity:   800,
 		Time:       t,
 		GrandTotal: 7,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        1,
-		Quantity:   500,
+		Quantity:   900,
 		Time:       t,
 		GrandTotal: 8,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        1,
-		Quantity:   550,
+		Quantity:   1000,
 		Time:       t,
 		GrandTotal: 9,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
-		PID:        1,
-		Quantity:   600,
+		PID:        2,
+		Quantity:   500,
 		Time:       t,
 		GrandTotal: 10,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        1,
-		Quantity:   650,
+		Quantity:   500,
 		Time:       t,
 		GrandTotal: 11,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        1,
-		Quantity:   700,
+		Quantity:   600,
 		Time:       t,
 		GrandTotal: 12,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
-		PID:        2,
-		Quantity:   500,
+		PID:        1,
+		Quantity:   700,
 		Time:       t,
 		GrandTotal: 13,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        1,
-		Quantity:   500,
+		Quantity:   800,
 		Time:       t,
 		GrandTotal: 14,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        1,
-		Quantity:   550,
+		Quantity:   900,
 		Time:       t,
 		GrandTotal: 15,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        1,
-		Quantity:   600,
+		Quantity:   1000,
 		Time:       t,
 		GrandTotal: 16,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
-		PID:        1,
-		Quantity:   650,
+		PID:        2,
+		Quantity:   500,
 		Time:       t,
 		GrandTotal: 17,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        1,
-		Quantity:   700,
+		Quantity:   500,
 		Time:       t,
 		GrandTotal: 18,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
-		PID:        2,
+		PID:        1,
 		Quantity:   600,
 		Time:       t,
 		GrandTotal: 19,
@@ -156,86 +158,93 @@ func SignInPrizeRun202010() {
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        1,
-		Quantity:   500,
+		Quantity:   700,
 		Time:       t,
 		GrandTotal: 20,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        1,
-		Quantity:   550,
+		Quantity:   800,
 		Time:       t,
 		GrandTotal: 21,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        1,
-		Quantity:   600,
+		Quantity:   900,
 		Time:       t,
 		GrandTotal: 22,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        1,
-		Quantity:   650,
+		Quantity:   1000,
 		Time:       t,
 		GrandTotal: 23,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
-		PID:        1,
-		Quantity:   700,
+		PID:        2,
+		Quantity:   500,
 		Time:       t,
 		GrandTotal: 24,
-	})
-
-	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
-		PID:        2,
-		Quantity:   1000,
-		Time:       t,
-		GrandTotal: 25,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        1,
 		Quantity:   500,
 		Time:       t,
-		GrandTotal: 26,
-	})
-
-	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
-		PID:        1,
-		Quantity:   550,
-		Time:       t,
-		GrandTotal: 27,
+		GrandTotal: 25,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        1,
 		Quantity:   600,
 		Time:       t,
-		GrandTotal: 28,
-	})
-
-	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
-		PID:        1,
-		Quantity:   650,
-		Time:       t,
-		GrandTotal: 29,
+		GrandTotal: 26,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        1,
 		Quantity:   700,
 		Time:       t,
+		GrandTotal: 27,
+	})
+
+	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
+		PID:        1,
+		Quantity:   800,
+		Time:       t,
+		GrandTotal: 28,
+	})
+
+	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
+		PID:        1,
+		Quantity:   900,
+		Time:       t,
+		GrandTotal: 29,
+	})
+
+	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
+		PID:        1,
+		Quantity:   1000,
+		Time:       t,
 		GrandTotal: 30,
 	})
 
 	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
 		PID:        2,
-		Quantity:   1500,
+		Quantity:   500,
 		Time:       t,
 		GrandTotal: 31,
+	})
+
+	sign_in_prizes = append(sign_in_prizes, model.SignInPrize{
+		PID:        1,
+		Quantity:   500,
+		Time:       t,
+		GrandTotal: 32,
 	})
 
 	sql := `INSERT INTO sign_in_prizes (p_id, quantity, time, grand_total) VALUES `

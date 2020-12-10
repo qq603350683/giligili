@@ -6,6 +6,6 @@ func Run() {
 	PlanRun()
 	PropRun()
 	StoreRun()
-	SignInPrizeRun()
-	SignInPrizeRun202010()
+	//SignInPrizeRun()
+	//SignInPrizeRun202010()
 }

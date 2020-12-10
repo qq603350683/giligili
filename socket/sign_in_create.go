@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"giligili/constbase"
 	"giligili/model"
+	"giligili/seeder"
 	"giligili/serializer"
 	"giligili/util"
 	"github.com/jinzhu/gorm"
@@ -23,6 +24,13 @@ func NewSignInResult() *SignInResult {
 
 // 今天签到
 func SignInCreate(params Params) {
+	multiple := 1
+
+	// 这里是看广告签到，3倍签到奖励
+	if _, ok := params["three_times"]; ok {
+		multiple = 3
+	}
+
 	if model.UserInfo.UID == 0 {
 		SendMessage(model.UserInfo.UID, serializer.JsonByte(constbase.SIGN_IN_FAIL, "签到失败", nil, ""))
 		return
@@ -60,7 +68,15 @@ func SignInCreate(params Params) {
 	}
 
 	sign_in_prize := model.GetSignInPrize(model.UserInfo.UID, month_count + 1, "")
+	if sign_in_prize == nil {
+		// 如果没有创建任何记录，就自动创建一个新的默认列表
+		seeder.AutoBuildSignInPrize()
+		sign_in_prize = model.GetSignInPrize(model.UserInfo.UID, month_count + 1, "")
+	}
+
 	if sign_in_prize != nil {
+		sign_in_prize.Quantity *= multiple
+
 		// 添加到背包
 		switch sign_in_prize.PropDetail.Type {
 		case constbase.PROP_TYPE_GOLD:
@@ -102,3 +118,4 @@ func SignInCreate(params Params) {
 	SendMessage(model.UserInfo.UID, serializer.JsonByte(constbase.SIGN_IN_SUCCESS, msg, sign_in_result, ""))
 	return
 }
+
