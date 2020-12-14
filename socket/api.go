@@ -1,6 +1,9 @@
 package socket
 
 func Api() {
+	AddRoute("watch_adv", HandlerFunc(WatchAdv))
+	AddRoute("auto_commission", HandlerFunc(AutoCommission))
+
 	AddRoute("sign_in/create", HandlerFunc(SignInCreate))
 	AddRoute("share/create", HandlerFunc(ShareCreate))
 	AddRoute("level/get-info", HandlerFunc(GetLevelInfo))

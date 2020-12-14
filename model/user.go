@@ -11,6 +11,7 @@ type User struct {
 	UpID int `json:"up_id" gorm:"column:up_id;type:int(10) unsigned; not null; default:0; comment:'飞机ID'"`
 	Gold int `json:"gold" gorm:"column:gold;type:int(10) unsigned; not null; default:0; comment:'金币'"`
 	Diamond int `json:"diamond" gorm:"column:diamond;type:int(10) unsigned; not null; default:0; comment:'钻石'"`
+	Balance float64 `json:"balance" gorm:"column:balance;type:decimal(10, 2) unsigned;not null;default:0.01; comment:'余额'"`
 	LID int `json:"l_id" gorm:"column:l_id;type:int(10) unsigned; not null; default:0; comment:'最高通关级别'"`
 	Plan *UserPlan `json:"plan" comment:"飞机详情"`
 	LoginedAt time.Time `json:"logined_at" gorm:"type:datetime;not null;default:'1000-01-01 00:00:00'; comment:'最近一次时间'"`

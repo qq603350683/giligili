@@ -4,6 +4,22 @@ const (
 	YES = 1
 	NO = 0
 
+	// 收入
+	INCOME = 1
+	// 支出
+	EXPENDITURE = 2
+
+	// 其他
+	STATUS_ORDER = 0
+	// 佣金未到账
+	STATUS_COMMISSION_NOT_ARRIVED = 1
+	// 佣金已到账
+	STATUS_COMMISSION_ARRIVED = 2
+	// 提现未到账
+	STATUS_WITHDRAW_NOT_ARRIVED = 3
+	// 提现已到账
+	STATUS_WITHDRAW_ARRIVED = 4
+
 	PLAN = "plan"
 
 	PROP_TYPE_GOLD = "gold"

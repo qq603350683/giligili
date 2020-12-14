@@ -1,6 +1,9 @@
 package util
 
-import "time"
+import (
+	"log"
+	"time"
+)
 
 const (
 	DATE = "2006-01-02"
@@ -21,4 +24,15 @@ func ToTime(str string) time.Time {
 	}
 
 	return t;
+}
+
+// 判断是否日期格式
+func IsDatetime(str string) bool {
+	_, err := time.Parse(DATE, str)
+	if err != nil {
+		log.Printf("日期格式(%s)不正确", str)
+		return false
+	}
+
+	return true
 }

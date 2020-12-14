@@ -98,6 +98,24 @@ func migration() {
 		DB.Set("gorm:table_options", set).CreateTable(&UserSharePrize{})
 	}
 
+	if DB.HasTable(&UserAdvRecord{}) {
+		DB.AutoMigrate(&UserAdvRecord{})
+	} else {
+		DB.Set("gorm:table_options", set).CreateTable(&UserAdvRecord{})
+	}
+
+	if DB.HasTable(&Bill{}) {
+		DB.AutoMigrate(&Bill{})
+	} else {
+		DB.Set("gorm:table_options", set).CreateTable(&Bill{})
+	}
+
+	if DB.HasTable(&Commission{}) {
+		DB.AutoMigrate(&Commission{})
+	} else {
+		DB.Set("gorm:table_options", set).CreateTable(&Commission{})
+	}
+
 	//DB.AutoMigrate(&User{})
 	//DB.AutoMigrate(&UserToken{})
 	//DB.AutoMigrate(&Level{})

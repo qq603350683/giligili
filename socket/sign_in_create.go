@@ -106,6 +106,16 @@ func SignInCreate(params Params) {
 		log.Println("没有奖品...")
 	}
 
+	if multiple > 0 {
+		// 这里是记录一下广告
+		boolean := model.CreateUserAdvRecord(model.UserInfo.UID, "签到激励广告观看完毕")
+		if boolean == false {
+			db.Rollback()
+			SendMessage(model.UserInfo.UID, serializer.JsonByte(constbase.SIGN_IN_FAIL, "签到失败", nil, ""))
+			return
+		}
+	}
+
 	db.Commit()
 
 	sign_in_result := NewSignInResult()
