@@ -114,6 +114,7 @@ func migration() {
 		DB.AutoMigrate(&Commission{})
 	} else {
 		DB.Set("gorm:table_options", set).CreateTable(&Commission{})
+
 	}
 
 	//DB.AutoMigrate(&User{})

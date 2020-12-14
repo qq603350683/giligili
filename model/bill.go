@@ -9,7 +9,8 @@ type Bill struct {
 	Price float64 `json:"price" gorm:"column:price;type:decimal(10, 2) unsigned;not null;default:0.01; comment:'金额'"`
 	Status int8 `json:"status" gorm:"column:status;type:int(1);not null;default:0;comment:'状态 0 - 其他 1 - 佣金未到账 2 - 佣金已到账 3 - 提现未到账 4 - 提现已到账'"`
 	Remark string `json:"remark" gorm:"column:remark;type:varchar(200);not null;comment:'备注'"`
-	CreatedAt time.Time `json:"-" gorm:"column:created_at; type:datetime;not null;index:idx_created_at comment:'创建时间'"`
+	ArrivedAt time.Time `json:"-" gorm:"column:arrived_at; type:datetime;not null;default:'1000-01-01 00:00:00';comment:'到账时间'"`
+	CreatedAt time.Time `json:"-" gorm:"column:created_at; type:datetime;not null;index:idx_created_at;comment:'创建时间'"`
 }
 
 func NewBill() *Bill {

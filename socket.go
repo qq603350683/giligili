@@ -31,6 +31,8 @@ func main() {
 
 	go tasks.SendFakeMessage()
 
+	go tasks.AsynHandleCommissionBill()
+
 	seeder.Run()
 
 	// 添加API

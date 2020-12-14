@@ -9,7 +9,7 @@ type UserAdvRecord struct {
 	UarID int `json:"uar_id" gorm:"column:uar_id;type:int(10) unsigned auto_increment;not null;primary_key;comment:'记录ID'"`
 	UID int `json:"u_id" gorm:"column:u_id; type:int(10) unsigned; not null; default:0; index:idx_u_id; comment:'用户ID 来自 users 表的 u_id'"`
 	Remark string `json:"remark" gorm:"column:remark;type:varchar(200);not null;comment:'备注'"`
-	CreatedAt time.Time `json:"-" gorm:"column:created_at; type:datetime;not null;index:idx_created_at comment:'创建时间'"`
+	CreatedAt time.Time `json:"-" gorm:"column:created_at; type:datetime;not null;index:idx_created_at;comment:'创建时间'"`
 }
 
 

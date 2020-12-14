@@ -14,7 +14,7 @@ type Commission struct {
 	UV int `json:"uv" gorm:"column:uv; type:int(10) unsigned;not null;default:0;comment:'受益用户数'"`
 	AdvNum int `json:"adv_num" gorm:"column:adv_num; type:int(10) unsigned;not null;default:0;comment:'总观看次数'"`
 	Remark string `json:"remark" gorm:"column:remark;type:varchar(200);not null;comment:'备注'"`
-	CreatedAt time.Time `json:"-" gorm:"column:created_at; type:datetime;not null;index:idx_created_at comment:'创建时间'"`
+	CreatedAt time.Time `json:"-" gorm:"column:created_at; type:datetime;not null;index:idx_created_at;comment:'创建时间'"`
 }
 
 func NewCommission() *Commission {
