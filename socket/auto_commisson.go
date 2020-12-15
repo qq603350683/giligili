@@ -65,9 +65,6 @@ func AutoCommission(params Params) {
 		return
 	}
 
-	commission := model.NewCommission()
-	commission.Remark = "分成记录操作成功"
-
 	var commission_list []CommissionList
 	if err := model.DB.Raw("SELECT u_id, COUNT(u_id) AS num FROM user_adv_records WHERE created_at >= ? AND created_at <= ? GROUP BY u_id", target_date + " 00:00:00", target_date + " 23:59:59").Find(&commission_list).Error; err != nil {
 		log.Println(err.Error())
@@ -77,8 +74,13 @@ func AutoCommission(params Params) {
 
 	uv := len(commission_list)
 	sql := ""
+	total_num := 0
+
+	db := model.DBBegin()
+
+	defer model.CancelDB()
+
 	if uv > 0 {
-		total_num := 0
 		for _, com := range(commission_list) {
 			total_num += com.Num
 		}
@@ -116,10 +118,6 @@ func AutoCommission(params Params) {
 			sql += fmt.Sprintf(str, com.UID, constbase.INCOME, price, constbase.STATUS_COMMISSION_NOT_ARRIVED, "广告观看收入", time.Now().Format(util.DATETIME))
 		}
 
-		db := model.DBBegin()
-
-		defer model.CancelDB()
-
 		err := db.Exec(sql).Error
 		if err != nil {
 			db.Rollback()
@@ -127,25 +125,26 @@ func AutoCommission(params Params) {
 			SendMessage(model.UserInfo.UID, serializer.JsonByte(http.StatusInternalServerError, "插入账单失败", nil, ""))
 			return
 		}
-
-		res := decimal.NewFromFloat(total_income).Sub(decimal.NewFromFloat(total_expenditure))
-
-		commission := model.NewCommission()
-		commission.UV = uv
-		commission.AdvNum = total_num
-		commission.IncomePrice, _ = res.Float64()
-		commission.IncomePrice += rake_price  // 这里 +rake_price 是系统抽取的拥佣金
-		commission.PayPrice = total_expenditure
-
-		if err := db.Create(commission).Error; err != nil {
-			db.Rollback()
-			log.Println(err.Error())
-			SendMessage(model.UserInfo.UID, serializer.JsonByte(http.StatusInternalServerError, "插入总账单失败", nil, ""))
-			return
-		}
-
-		db.Commit()
 	}
+
+	res := decimal.NewFromFloat(total_income).Sub(decimal.NewFromFloat(total_expenditure))
+
+	commission := model.NewCommission()
+	commission.UV = uv
+	commission.AdvNum = total_num
+	commission.IncomePrice, _ = res.Float64()
+	commission.IncomePrice += rake_price  // 这里 +rake_price 是系统抽取的拥佣金
+	commission.PayPrice = total_expenditure
+	commission.Remark = target_date + "佣金分成"
+
+	if err := db.Create(commission).Error; err != nil {
+		db.Rollback()
+		log.Println(err.Error())
+		SendMessage(model.UserInfo.UID, serializer.JsonByte(http.StatusInternalServerError, "插入总账单失败", nil, ""))
+		return
+	}
+
+	db.Commit()
 
 	SendMessage(model.UserInfo.UID, serializer.JsonByte(http.StatusOK, "success", sql, ""))
 }

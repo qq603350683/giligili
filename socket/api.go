@@ -3,6 +3,7 @@ package socket
 func Api() {
 	AddRoute("watch_adv", HandlerFunc(WatchAdv))
 	AddRoute("auto_commission", HandlerFunc(AutoCommission))
+	AddRoute("withdraw", HandlerFunc(Withdraw))
 
 	AddRoute("sign_in/create", HandlerFunc(SignInCreate))
 	AddRoute("share/create", HandlerFunc(ShareCreate))

@@ -12,6 +12,8 @@ type User struct {
 	Gold int `json:"gold" gorm:"column:gold;type:int(10) unsigned; not null; default:0; comment:'金币'"`
 	Diamond int `json:"diamond" gorm:"column:diamond;type:int(10) unsigned; not null; default:0; comment:'钻石'"`
 	Balance float64 `json:"balance" gorm:"column:balance;type:decimal(10, 2) unsigned;not null;default:0.01; comment:'余额'"`
+	AlipayName string `json:"alipay_name" gorm:"column:alipay_name;type:varchar(4);not null;default:'';comment:'支付宝姓名'"`
+	AlipayAccount string `json:"alipay_account" gorm:"column:alipay_account;type:varchar(50);not null;default:'';comment:'支付宝账户'"`
 	LID int `json:"l_id" gorm:"column:l_id;type:int(10) unsigned; not null; default:0; comment:'最高通关级别'"`
 	Version int `json:"-" gorm:"column:version;type:int(10) unsigned; not null; default:0; comment:'版本号'"`
 	Plan *UserPlan `json:"plan" comment:"飞机详情"`
