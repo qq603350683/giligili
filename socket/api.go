@@ -11,6 +11,7 @@ func Api() {
 	AddRoute("level/get-result", HandlerFunc(GetLevelResult))
 	AddRoute("user", HandlerFunc(GetUserInfo))
 	AddRoute("user/plan/change", HandlerFunc(UserPlanChange))
+	AddRoute("user/get-plans", HandlerFunc(GetUserPlans))
 
 	AddRoute("user/plan/upgrade/bullets/level", HandlerFunc(UserPlanUpgradeBulletsLevel))
 	AddRoute("user/plan/upgrade/bullets/speed", HandlerFunc(UserPlanUpgradeBulletsSpeed))

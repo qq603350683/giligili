@@ -87,5 +87,9 @@ const (
 	// 升级成功
 	USER_PLAN_UPGRADE_SUCCESS = 243
 
+	// 打开我的飞机页面
+	OPEN_MY_PLAN_LIST = 244
+
+
 	CHAT_MESSAGE = 290
 )

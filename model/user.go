@@ -157,6 +157,52 @@ func (user *User) GetPassLevelPrize(l_id, gold, diamond int) bool {
 	return true
 }
 
+func (user *User) GetRegisterCount(start string, end string) int {
+	u := NewUser()
+
+	query := DB.Model(u)
+	count := 0
+
+	if start != "" && end != "" {
+		query = query.Where("created_at >= ? and created_at <= ?", start, end)
+	} else if start == "" && end != "" {
+		query = query.Where("created_at <= ?", end)
+	} else if start != "" && end == "" {
+		query = query.Where("created_at >= ?", start)
+	}
+
+	err := query.Count(&count).Error
+	if err != nil {
+		log.Println(err)
+		return 0
+	}
+
+	return count
+}
+
+func (user *User) GetPassLevelCount(start string, end string) int {
+	u := NewUser()
+
+	query := DB.Model(u).Where("l_id >= 1")
+	count := 0
+
+	if start != "" && end != "" {
+		query = query.Where("created_at >= ? and created_at <= ?", start, end)
+	} else if start == "" && end != "" {
+		query = query.Where("created_at <= ?", end)
+	} else if start != "" && end == "" {
+		query = query.Where("created_at >= ?", start)
+	}
+
+	err := query.Count(&count).Error
+	if err != nil {
+		log.Println(err)
+		return 0
+	}
+
+	return count
+}
+
 // 更换飞机
 //func (user *User) ChangePlan(up_id int) bool {
 //	if UserInfo.UpID == up_id {

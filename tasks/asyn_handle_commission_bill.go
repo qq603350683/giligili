@@ -41,7 +41,7 @@ func AsynHandleCommissionBill() {
 		length := len(bills)
 
 		if length == 0 {
-			log.Println("not found any commission bills")
+			//log.Println("not found any commission bills")
 			AsynHandleCommissionBillFlag = false
 			continue
 		} else {

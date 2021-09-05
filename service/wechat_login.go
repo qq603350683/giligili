@@ -43,6 +43,7 @@ func WechantLogin(code string) *WechatLoginResult {
 	url := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", os.Getenv("WECHAT_MINIAPP_APPID"), os.Getenv("WECHAT_MINIAPP_APPSECRET"), code)
 
 	str := util.CURL("GET", url, nil, nil)
+	log.Printf("wechat return: %s", str)
 	if str == "" {
 		return wechat_login_result
 	}
@@ -58,12 +59,6 @@ func WechantLogin(code string) *WechatLoginResult {
 	if wechat_miniapp_login_result.Errcode != 0 {
 		log.Printf("解析微信小程序Code返回数据异常 errcode: %d errmsg: %s", wechat_miniapp_login_result.Errcode, wechat_miniapp_login_result.Errmsg)
 	}
-
-	//log.Println(wechat_miniapp_login_result)
-
-	//wechat_miniapp_login_result.Unionid = ""
-	//wechat_miniapp_login_result.MiniAppOpenid = "qqqqc"
-	//wechat_miniapp_login_result.SessionKey = "xxx"
 
 	// 判断当前Openid是否存在
 	wechat_user, err := model.GetWechatUserInfoByOpenid(wechat_miniapp_login_result.MiniAppOpenid)

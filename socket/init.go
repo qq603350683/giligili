@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"os"
 	"runtime"
 	"time"
 )
@@ -58,6 +59,12 @@ func Run() {
 			b, _ := json.Marshal(res)
 			w.Write(b)
 		}
+	})
+
+	http.HandleFunc("/daily", func(w http.ResponseWriter, r *http.Request) {
+		res := service.GetDailyData()
+		b, _ := json.Marshal(res)
+		w.Write(b)
 	})
 
 	http.HandleFunc("/plan", func(w http.ResponseWriter, r *http.Request) {
@@ -167,12 +174,16 @@ func Run() {
 	sys_type := runtime.GOOS
 
 	log.Printf("%s 启动....", sys_type)
+	log.Printf("websocket listen: %s", os.Getenv("WEBSOCKET_ADDR"))
+	log.Printf("MySQL lister: %s", os.Getenv("MYSQL_DSN"))
+	log.Printf("appid: %s", os.Getenv("WECHAT_MINIAPP_APPID"))
+	log.Printf("appid secret: %s", os.Getenv("WECHAT_MINIAPP_APPSECRET"))
 
 	switch sys_type {
 	case "linux":
-		err = http.ListenAndServeTLS("0.0.0.0:9501", "4501984_www.yfwethink.com.pem", "4501984_www.yfwethink.com.key", nil)
+		err = http.ListenAndServeTLS(os.Getenv("WEBSOCKET_ADDR"), os.Getenv("SSL_PEM"), os.Getenv("SSL_KEY"), nil)
 	case "windows":
-		err = http.ListenAndServe("0.0.0.0:9501", nil)
+		err = http.ListenAndServe(os.Getenv("WEBSOCKET_ADDR"), nil)
 	}
 
 	if (err != nil) {

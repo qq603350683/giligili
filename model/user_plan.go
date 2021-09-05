@@ -57,7 +57,7 @@ func GetUserPlans(u_id int) []UserPlan {
 
 	var plans []UserPlan
 
-	err := DB.Where("u_id = ? AND del_at = ?", u_id, DelAtDefaultTime).Find(&plans).Error
+	err := DB.Where("u_id = ? AND del_at = ?", u_id, DelAtDefaultTime).Order("is_put_on desc, up_id desc").Find(&plans).Error
 	if err != nil {
 		log.Println(err.Error())
 		return nil

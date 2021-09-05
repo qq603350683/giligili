@@ -8,6 +8,8 @@ require github.com/jinzhu/gorm v1.9.12
 
 require github.com/gorilla/websocket v1.4.1
 
+require github.com/olivere/elastic v6.2.35+incompatible
+
 require (
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/joho/godotenv v1.3.0
